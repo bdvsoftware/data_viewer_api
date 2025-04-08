@@ -1,6 +1,6 @@
 ﻿namespace DataViewerApi.Persistance.Entity;
 
-public class DriverWideshotFrame
+public class WideshotFrameDriver
 {
     public int DriverId { get; set; }
     public int WideshotFrameId { get; set; }

@@ -1,18 +1,22 @@
 using DataViewerApi.Persistance;
+using DataViewerApi.Persistance.Repository;
+using DataViewerApi.Service;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Register services for the app
-builder.Services.AddControllers();
-
-// Register the repositories and services
-//builder.Services.AddScoped<IVideoRepository, VideoRepository>();
 
 // Register database context (replace with your actual connection string)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"))
 );
+
+// Register services for the app
+builder.Services.AddControllers();
+
+// Register the repositories and services
+builder.Services.AddScoped<IVideoRepository, VideoRepository>();
+builder.Services.AddScoped<IVideoService, VideoService>();
+
 
 var app = builder.Build();
 

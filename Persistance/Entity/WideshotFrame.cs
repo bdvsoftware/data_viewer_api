@@ -9,5 +9,5 @@ public class WideshotFrame
     public double Duration { get; set; }
 
     public Frame Frame { get; set; }
-    public ICollection<DriverWideshotFrame> DriverWideshotFrames { get; set; }
+    public ICollection<WideshotFrameDriver> DriverWideshotFrames { get; set; }
 }

@@ -19,7 +19,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<PitboostFrame> PitboostFrames { get; set; }
     public DbSet<PitboostFrameDriver> PitboostFrameDrivers { get; set; }
     public DbSet<WideshotFrame> WideshotFrames { get; set; }
-    public DbSet<DriverWideshotFrame> DriverWideshotFrames { get; set; }
+    public DbSet<WideshotFrameDriver> WideshotFrameDrivers { get; set; }
     public DbSet<Team> Teams { get; set; }
     public DbSet<Driver> Drivers { get; set; }
 
@@ -27,63 +27,49 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Session>()
-            .HasOne(s => s.GrandPrix)
-            .WithMany(gp => gp.Sessions)
-            .HasForeignKey(s => s.GpId);
-
-        modelBuilder.Entity<Session>()
-            .HasOne(s => s.SessionType)
-            .WithMany(st => st.Sessions)
-            .HasForeignKey(s => s.SessionTypeId);
-
-        modelBuilder.Entity<Video>()
-            .HasOne(v => v.Session)
-            .WithOne(s => s.Video)
-            .HasForeignKey<Video>(v => v.SessionId);
-
+        modelBuilder.Entity<Driver>()
+            .ToTable("driver");
+        
+        modelBuilder.Entity<DrivereyeFrame>()
+            .ToTable("drivereye_frame");
+        
         modelBuilder.Entity<Frame>()
-            .HasOne(f => f.Video)
-            .WithMany(v => v.Frames)
-            .HasForeignKey(f => f.VideoId);
-
+            .ToTable("frame");
+        
+        modelBuilder.Entity<GrandPrix>()
+            .ToTable("grand_prix");
+        
         modelBuilder.Entity<OnboardFrame>()
-            .HasOne(of => of.Frame)
-            .WithMany(f => f.OnboardFrames)
-            .HasForeignKey(of => of.FrameId);
-
-        modelBuilder.Entity<DrivereyeFrame>()
-            .HasKey(df => new { df.DriverId, df.FrameId });
-
-        modelBuilder.Entity<DrivereyeFrame>()
-            .HasOne(df => df.Driver)
-            .WithMany() 
-            .HasForeignKey(df => df.DriverId);
-
-        modelBuilder.Entity<DrivereyeFrame>()
-            .HasOne(df => df.Frame)
-            .WithMany() 
-            .HasForeignKey(df => df.FrameId);
-
+            .ToTable("onboard_frame");
+        
         modelBuilder.Entity<PitboostFrame>()
-            .HasOne(pb => pb.Frame)
-            .WithMany(f => f.PitboostFrames)
-            .HasForeignKey(pb => pb.FrameId);
+            .ToTable("pitboost_frame");
+        
+        modelBuilder.Entity<PitboostFrameDriver>()
+            .ToTable("pitboost_frame_driver");
 
+        modelBuilder.Entity<Session>()
+            .ToTable("session"); 
+        
+        modelBuilder.Entity<SessionType>()
+            .ToTable("session_type"); 
+        
+        modelBuilder.Entity<Team>()
+            .ToTable("team"); 
+        
+        modelBuilder.Entity<Video>()
+            .ToTable("video"); 
+        
         modelBuilder.Entity<WideshotFrame>()
-            .HasOne(ws => ws.Frame)
-            .WithMany(f => f.WideshotFrames)
-            .HasForeignKey(ws => ws.FrameId);
-
-        modelBuilder.Entity<DriverWideshotFrame>()
+            .ToTable("wideshot_frame"); 
+        
+        modelBuilder.Entity<WideshotFrameDriver>()
+            .ToTable("wideshot_frame_driver"); 
+        
+        modelBuilder.Entity<WideshotFrameDriver>()
             .HasKey(d => new { d.DriverId, d.WideshotFrameId });
         
         modelBuilder.Entity<PitboostFrameDriver>()
             .HasKey(d => new { d.PitboostFrameId, d.DriverId });
-
-        modelBuilder.Entity<Driver>()
-            .HasOne(d => d.Team)
-            .WithMany(t => t.Drivers)
-            .HasForeignKey(d => d.TeamId);
     }
 }

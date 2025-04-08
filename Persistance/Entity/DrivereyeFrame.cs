@@ -2,7 +2,7 @@
 
 public class DrivereyeFrame
 {
-    public int DrivereyeId { get; set; }
+    public int DrivereyeFrameId { get; set; }
     public int FrameId { get; set; }
     public int DriverId { get; set; }
     public DateTime Timestamp { get; set; }

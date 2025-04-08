@@ -10,6 +10,8 @@ public class Video
     public string Name { get; set; }
     public string Url { get; set; }
     public double Duration { get; set; }
+    public int TotalDuration { get; set; }
+    public string Status { get; set; }
 
     public Session Session { get; set; }
     public ICollection<Frame> Frames { get; set; }

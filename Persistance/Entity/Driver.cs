@@ -10,6 +10,6 @@ public class Driver
     public Team Team { get; set; }
     public ICollection<OnboardFrame> OnboardFrames { get; set; }
     public ICollection<DrivereyeFrame> DrivereyeFrames { get; set; }
-    public ICollection<DriverWideshotFrame> DriverWideshotFrames { get; set; }
+    public ICollection<WideshotFrameDriver> DriverWideshotFrames { get; set; }
     public ICollection<PitboostFrameDriver> PitboostFrameDrivers { get; set; }
 }
