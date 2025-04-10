@@ -1,14 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 
-namespace DataViewerApi.Persistance.Entity;
+namespace DataViewerApi.Prueba;
 
-public class GrandPrix
+public partial class GrandPrix
 {
-    [Key]
     public int GpId { get; set; }
-    public string Name { get; set; }
-    public DateTime Date { get; set; }
-    public string Circuit { get; set; }
 
-    public ICollection<Session> Sessions { get; set; }
+    public string Name { get; set; } = null!;
+
+    public DateOnly Date { get; set; }
+
+    public string Circuit { get; set; } = null!;
+
+    public virtual ICollection<Session> Sessions { get; set; } = new List<Session>();
 }

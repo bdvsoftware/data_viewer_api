@@ -1,14 +1,25 @@
-﻿namespace DataViewerApi.Persistance.Entity;
+﻿using System;
+using System.Collections.Generic;
 
-public class Frame
+namespace DataViewerApi.Prueba;
+
+public partial class Frame
 {
     public int FrameId { get; set; }
+
     public int VideoId { get; set; }
+
+    public int Seq { get; set; }
+
     public DateTime Timestamp { get; set; }
 
-    public Video Video { get; set; }
-    public ICollection<OnboardFrame> OnboardFrames { get; set; }
-    public ICollection<DrivereyeFrame> DrivereyeFrames { get; set; }
-    public ICollection<PitboostFrame> PitboostFrames { get; set; }
-    public ICollection<WideshotFrame> WideshotFrames { get; set; }
+    public virtual ICollection<DrivereyeFrame> DrivereyeFrames { get; set; } = new List<DrivereyeFrame>();
+
+    public virtual ICollection<OnboardFrame> OnboardFrames { get; set; } = new List<OnboardFrame>();
+
+    public virtual ICollection<PitboostFrame> PitboostFrames { get; set; } = new List<PitboostFrame>();
+
+    public virtual Video Video { get; set; } = null!;
+
+    public virtual ICollection<WideshotFrame> WideshotFrames { get; set; } = new List<WideshotFrame>();
 }

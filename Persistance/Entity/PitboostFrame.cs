@@ -1,15 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 
-namespace DataViewerApi.Persistance.Entity;
+namespace DataViewerApi.Prueba;
 
-public class PitboostFrame
+public partial class PitboostFrame
 {
-    [Key]
     public int PitboostFrameId { get; set; }
+
     public int FrameId { get; set; }
+
     public int? Status { get; set; }
+
     public DateTime Timestamp { get; set; }
 
-    public Frame Frame { get; set; }
-    public ICollection<PitboostFrameDriver> PitboostFrameDrivers { get; set; }
+    public virtual Frame Frame { get; set; } = null!;
+
+    public virtual ICollection<Driver> Drivers { get; set; } = new List<Driver>();
 }

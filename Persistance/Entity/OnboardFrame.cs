@@ -1,15 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 
-namespace DataViewerApi.Persistance.Entity;
+namespace DataViewerApi.Prueba;
 
-public class OnboardFrame
+public partial class OnboardFrame
 {
-    [Key]
     public int OnboardFrameId { get; set; }
+
     public int FrameId { get; set; }
+
     public int? DriverId { get; set; }
+
     public DateTime Timestamp { get; set; }
 
-    public Frame Frame { get; set; }
-    public Driver Driver { get; set; }
+    public virtual Driver? Driver { get; set; }
+
+    public virtual Frame Frame { get; set; } = null!;
 }

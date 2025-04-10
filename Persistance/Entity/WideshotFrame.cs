@@ -1,13 +1,21 @@
-﻿namespace DataViewerApi.Persistance.Entity;
+﻿using System;
+using System.Collections.Generic;
 
-public class WideshotFrame
+namespace DataViewerApi.Prueba;
+
+public partial class WideshotFrame
 {
     public int WideshotFrameId { get; set; }
+
     public int FrameId { get; set; }
+
     public DateTime Timestamp { get; set; }
-    public string VideoUrl { get; set; }
+
+    public string? VideoUrl { get; set; }
+
     public double Duration { get; set; }
 
-    public Frame Frame { get; set; }
-    public ICollection<WideshotFrameDriver> DriverWideshotFrames { get; set; }
+    public virtual Frame Frame { get; set; } = null!;
+
+    public virtual ICollection<Driver> Drivers { get; set; } = new List<Driver>();
 }

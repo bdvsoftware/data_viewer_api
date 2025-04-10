@@ -1,9 +1,13 @@
-﻿namespace DataViewerApi.Persistance.Entity;
+﻿using System;
+using System.Collections.Generic;
 
-public class Team
+namespace DataViewerApi.Prueba;
+
+public partial class Team
 {
     public int TeamId { get; set; }
-    public string Name { get; set; }
 
-    public ICollection<Driver> Drivers { get; set; }
+    public string Name { get; set; } = null!;
+
+    public virtual ICollection<Driver> Drivers { get; set; } = new List<Driver>();
 }

@@ -1,4 +1,4 @@
-﻿using DataViewerApi.Persistance.Entity;
+﻿using DataViewerApi.Prueba;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataViewerApi.Persistance.Repository;

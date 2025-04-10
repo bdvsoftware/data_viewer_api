@@ -1,15 +1,25 @@
-﻿namespace DataViewerApi.Persistance.Entity;
+﻿using System;
+using System.Collections.Generic;
 
-public class Driver
+namespace DataViewerApi.Prueba;
+
+public partial class Driver
 {
     public int DriverId { get; set; }
+
     public int TeamId { get; set; }
-    public string Name { get; set; }
+
+    public string Name { get; set; } = null!;
+
     public int Number { get; set; }
 
-    public Team Team { get; set; }
-    public ICollection<OnboardFrame> OnboardFrames { get; set; }
-    public ICollection<DrivereyeFrame> DrivereyeFrames { get; set; }
-    public ICollection<WideshotFrameDriver> DriverWideshotFrames { get; set; }
-    public ICollection<PitboostFrameDriver> PitboostFrameDrivers { get; set; }
+    public virtual ICollection<DrivereyeFrame> DrivereyeFrames { get; set; } = new List<DrivereyeFrame>();
+
+    public virtual ICollection<OnboardFrame> OnboardFrames { get; set; } = new List<OnboardFrame>();
+
+    public virtual Team Team { get; set; } = null!;
+
+    public virtual ICollection<PitboostFrame> PitboostFrames { get; set; } = new List<PitboostFrame>();
+
+    public virtual ICollection<WideshotFrame> WideshotFrames { get; set; } = new List<WideshotFrame>();
 }

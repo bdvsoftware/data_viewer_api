@@ -1,5 +1,6 @@
 using DataViewerApi.Persistance;
 using DataViewerApi.Persistance.Repository;
+using DataViewerApi.Prueba;
 using DataViewerApi.Service;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,9 +1,13 @@
-﻿namespace DataViewerApi.Persistance.Entity;
+﻿using System;
+using System.Collections.Generic;
 
-public class SessionType
+namespace DataViewerApi.Prueba;
+
+public partial class SessionType
 {
     public int SessionTypeId { get; set; }
-    public string Name { get; set; }
 
-    public ICollection<Session> Sessions { get; set; }
+    public string Name { get; set; } = null!;
+
+    public virtual ICollection<Session> Sessions { get; set; } = new List<Session>();
 }

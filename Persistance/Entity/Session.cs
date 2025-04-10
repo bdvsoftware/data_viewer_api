@@ -1,16 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 
-namespace DataViewerApi.Persistance.Entity;
+namespace DataViewerApi.Prueba;
 
-public class Session
+public partial class Session
 {
-    [Key]
     public int SessionId { get; set; }
+
     public int GpId { get; set; }
+
     public int SessionTypeId { get; set; }
+
     public DateTime Date { get; set; }
 
-    public GrandPrix GrandPrix { get; set; }
-    public SessionType SessionType { get; set; }
-    public Video Video { get; set; }
+    public virtual GrandPrix Gp { get; set; } = null!;
+
+    public virtual SessionType SessionType { get; set; } = null!;
+
+    public virtual Video? Video { get; set; }
 }
