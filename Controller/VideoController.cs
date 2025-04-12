@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace DataViewerApi.Controller;
 
-[Route("api/[controller]")]
 [ApiController]
+[Route("api/[controller]")]
 public class VideoController : ControllerBase
 {
     
@@ -32,10 +32,10 @@ public class VideoController : ControllerBase
 
     
     [HttpPost("upload")]
-    public async Task<ActionResult<UploadedVideoDto>> UploadVideo([FromForm] IFormFile file)
+    public async Task<ActionResult<UploadedVideoDto>> UploadVideo([FromForm] RequestUploadVideoDto request)
     {
 
-        var response = await _videoService.UploadVideo(file);
+        var response = await _videoService.UploadVideo(request);
 
         return Ok(response);
     }

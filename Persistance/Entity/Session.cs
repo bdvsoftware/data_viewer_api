@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DataViewerApi.Prueba;
+namespace DataViewerApi.Persistance.Entity;
 
 public partial class Session
 {
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int SessionId { get; set; }
 
     public int GpId { get; set; }

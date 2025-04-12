@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DataViewerApi.Prueba;
+﻿namespace DataViewerApi.Persistance.Entity;
 
 public partial class SessionType
 {

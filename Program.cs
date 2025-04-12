@@ -1,12 +1,12 @@
 using System.Text.Json;
 using DataViewerApi.Persistance.Repository;
-using DataViewerApi.Prueba;
+using DataViewerApi.Persistance.Entity;
 using DataViewerApi.Service;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Register database context (replace with your actual connection string)
+// Register database db (replace with your actual connection string)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"))
 );

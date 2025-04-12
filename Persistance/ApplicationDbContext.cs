@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataViewerApi.Prueba;
+namespace DataViewerApi.Persistance.Entity;
 
 public partial class ApplicationDbContext : DbContext
 {

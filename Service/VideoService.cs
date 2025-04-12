@@ -1,6 +1,6 @@
 ﻿using DataViewerApi.Dto;
 using DataViewerApi.Persistance.Repository;
-using DataViewerApi.Prueba;
+using DataViewerApi.Persistance.Entity;
 using DataViewerApi.Utils;
 
 namespace DataViewerApi.Service;
@@ -8,7 +8,7 @@ namespace DataViewerApi.Service;
 public interface IVideoService
 {
     Task<Boolean> ExistsVideoByName(string videoName);
-    Task<UploadedVideoDto> UploadVideo(IFormFile file);
+    Task<UploadedVideoDto> UploadVideo(RequestUploadVideoDto request);
 }
 
 public class VideoService : IVideoService
@@ -26,13 +26,13 @@ public class VideoService : IVideoService
         return video is not null;
     }
 
-    public async Task<UploadedVideoDto> UploadVideo(IFormFile file)
+    public async Task<UploadedVideoDto> UploadVideo(RequestUploadVideoDto request)
     {
-        var filePath = Path.Combine(Constants.VideoDirectory, file.FileName);
+        var filePath = Path.Combine(Constants.VideoDirectory, request.File.FileName);
 
         using (var stream = new FileStream(filePath, FileMode.Create))
         {
-            await file.CopyToAsync(stream);
+            await request.File.CopyToAsync(stream);
             Console.Out.WriteLine("Uploaded video: " + filePath);
         }
 

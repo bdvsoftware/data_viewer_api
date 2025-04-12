@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DataViewerApi.Prueba;
+namespace DataViewerApi.Persistance.Entity;
 
 public partial class Video
 {
