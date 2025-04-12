@@ -1,13 +1,19 @@
 ﻿using DataViewerApi.Persistance.Entity;
+using DataViewerApi.Persistance.Repository;
 
 namespace DataViewerApi.Service;
 
 public interface ISessionService
 {
-    Task AddSessionType(SessionType sessionType);
+    
 }
 
-public class SessionService
+public class SessionService : ISessionService
 {
-    
+    private readonly ISessionTypeRepository _sessionTypeRepository;
+
+    public SessionService(ISessionTypeRepository sessionTypeRepository)
+    {
+        _sessionTypeRepository = sessionTypeRepository;
+    }
 }

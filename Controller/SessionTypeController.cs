@@ -20,4 +20,10 @@ public class SessionTypeController : ControllerBase
     {
         return await _sessionTypeService.GetSessionTypes();
     }
+    
+    [HttpGet("all-names")]
+    public async Task<List<string>> GetSessionTypeNames()
+    {
+        return await _sessionTypeService.GetAllNames();
+    }
 }

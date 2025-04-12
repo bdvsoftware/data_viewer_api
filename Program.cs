@@ -21,6 +21,12 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddScoped<IVideoRepository, VideoRepository>();
 builder.Services.AddScoped<IVideoService, VideoService>();
 
+builder.Services.AddScoped<ISessionTypeRepository, SessionTypeRepository>();
+builder.Services.AddScoped<ISessionTypeService, SessionTypeService>();
+
+builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+builder.Services.AddScoped<ISessionService, SessionService>();
+
 
 var app = builder.Build();
 
