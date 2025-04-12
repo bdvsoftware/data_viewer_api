@@ -1,4 +1,4 @@
-using DataViewerApi.Persistance;
+using System.Text.Json;
 using DataViewerApi.Persistance.Repository;
 using DataViewerApi.Prueba;
 using DataViewerApi.Service;
@@ -12,7 +12,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 
 // Register services for the app
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+});
 
 // Register the repositories and services
 builder.Services.AddScoped<IVideoRepository, VideoRepository>();

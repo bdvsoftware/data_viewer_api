@@ -243,7 +243,8 @@ public partial class ApplicationDbContext : DbContext
         modelBuilder.Entity<Video>(entity =>
         {
             entity.HasKey(e => e.VideoId).HasName("video_pkey");
-
+            entity.Property(v => v.VideoId).ValueGeneratedOnAdd();
+            
             entity.ToTable("video");
 
             entity.HasIndex(e => e.SessionId, "video_session_id_key").IsUnique();
