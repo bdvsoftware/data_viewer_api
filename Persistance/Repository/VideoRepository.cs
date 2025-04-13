@@ -7,13 +7,13 @@ public interface IVideoRepository
 {
     Task<Video> GetVideo(int videoId);
     Task<Video?> GetVideoByName(string videoName);
-    Task AddVideo(Video video);
+    Task<Video> AddVideo(Video video);
 }
 
 public class VideoRepository : IVideoRepository
 {
     
-    private readonly ApplicationDbContext _db;
+    public readonly ApplicationDbContext _db;
 
     public VideoRepository(ApplicationDbContext db)
     {
@@ -39,8 +39,10 @@ public class VideoRepository : IVideoRepository
         return video;
     }
 
-    public async Task AddVideo(Video video)
+    public async Task<Video> AddVideo(Video video)
     {
         await _db.Videos.AddAsync(video);
+        await _db.SaveChangesAsync();
+        return video;
     }
 }

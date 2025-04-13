@@ -18,4 +18,11 @@ public partial class Session
     public virtual SessionType SessionType { get; set; } = null!;
 
     public virtual Video? Video { get; set; }
+
+    public Session(int gpId, int sessionTypeId, DateTime date)
+    {
+        GpId = gpId;
+        SessionTypeId = sessionTypeId;
+        Date = date;
+    }
 }

@@ -11,7 +11,7 @@ public partial class Video
 
     public int SessionId { get; set; }
 
-    public string? Name { get; set; }
+    public string Name { get; set; }
 
     public string Url { get; set; } = null!;
 
@@ -25,7 +25,7 @@ public partial class Video
 
     public virtual Session Session { get; set; } = null!;
 
-    public Video(int sessionId, string? name, string url, double duration, int totalFrames, string status)
+    public Video(int sessionId, string name, string url, double duration, int totalFrames, string status)
     {
         SessionId = sessionId;
         Name = name;

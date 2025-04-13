@@ -6,7 +6,7 @@ namespace DataViewerApi.Persistance.Repository;
 public interface ISessionRepository
 {
     Task<IEnumerable<Session>> GetAll();
-    Task AddSession(Session session);
+    Task<Session> AddSession(Session session);
 }
 
 public class SessionRepository : ISessionRepository
@@ -24,8 +24,11 @@ public class SessionRepository : ISessionRepository
         return await _db.Sessions.ToListAsync();
     }
 
-    public async Task AddSession(Session session)
+    public async Task<Session> AddSession(Session session)
     {
         await _db.Sessions.AddAsync(session);
+        await _db.SaveChangesAsync();
+        return session;
     }
+
 }

@@ -7,6 +7,7 @@ public interface IGrandPrixRepository
 {
     Task<IEnumerable<GrandPrix>> GetAll();
     Task<List<string>> GetAllNames();
+    Task<GrandPrix> GetByName(string gpName);
 }
 
 public class GrandPrixRepository : IGrandPrixRepository
@@ -28,5 +29,12 @@ public class GrandPrixRepository : IGrandPrixRepository
         return await _db.GrandPrixes
             .Select(gp => gp.Name)
             .ToListAsync();
+    }
+
+    public async Task<GrandPrix> GetByName(string name)
+    {
+        return await _db.GrandPrixes
+            .Where(gp => gp.Name == name)
+            .SingleAsync();
     }
 }
