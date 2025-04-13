@@ -16,9 +16,15 @@ public class GrandPrixController : ControllerBase
         _grandPrixService = grandPrixService;
     }
 
-    [HttpGet]
+    [HttpGet("all")]
     public async Task<IEnumerable<GrandPrix>> GetAllGrandPrix()
     {
         return await _grandPrixService.GetAll();
+    }
+    
+    [HttpGet("all-names")]
+    public async Task<List<string>> GetAllGrandPrixNames()
+    {
+        return await _grandPrixService.GetAllNames();
     }
 }

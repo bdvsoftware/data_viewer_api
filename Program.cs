@@ -27,6 +27,8 @@ builder.Services.AddScoped<ISessionTypeService, SessionTypeService>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 
+builder.Services.AddScoped<IGrandPrixRepository, GrandPrixRepository>();
+builder.Services.AddScoped<IGrandPrixService, GrandPrixService>();
 
 var app = builder.Build();
 

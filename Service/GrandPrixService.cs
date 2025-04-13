@@ -6,14 +6,15 @@ namespace DataViewerApi.Service;
 public interface IGrandPrixService
 {
     Task<IEnumerable<GrandPrix>> GetAll();
+    Task<List<string>> GetAllNames();
 }
 
-public class GrandPrixService
+public class GrandPrixService : IGrandPrixService
 {
     
-    private readonly GrandPrixRepository _grandPrixRepository;
+    private readonly IGrandPrixRepository _grandPrixRepository;
 
-    public GrandPrixService(GrandPrixRepository grandPrixRepository)
+    public GrandPrixService(IGrandPrixRepository grandPrixRepository)
     {
         _grandPrixRepository = grandPrixRepository;
     }
@@ -21,5 +22,10 @@ public class GrandPrixService
     public async Task<IEnumerable<GrandPrix>> GetAll()
     {
         return await _grandPrixRepository.GetAll();
+    }
+
+    public async Task<List<string>> GetAllNames()
+    {
+        return await _grandPrixRepository.GetAllNames();
     }
 }
