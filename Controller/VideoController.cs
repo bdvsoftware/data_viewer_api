@@ -39,4 +39,11 @@ public class VideoController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllVideos()
+    {
+        var videos = await _videoService.GetVideos();
+        return Ok(videos);
+    }
 }

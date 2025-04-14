@@ -1,4 +1,5 @@
-﻿using DataViewerApi.Persistance.Entity;
+﻿using DataViewerApi.Dto;
+using DataViewerApi.Persistance.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataViewerApi.Persistance.Repository;
@@ -8,6 +9,7 @@ public interface IVideoRepository
     Task<Video> GetVideo(int videoId);
     Task<Video?> GetVideoByName(string videoName);
     Task<Video> AddVideo(Video video);
+    Task<IEnumerable<ResponseVideoDto>> GetAllVideos();
 }
 
 public class VideoRepository : IVideoRepository
@@ -38,11 +40,30 @@ public class VideoRepository : IVideoRepository
         var video = await _db.Videos.SingleOrDefaultAsync(v => v.Name == videoName);
         return video;
     }
-
+    
     public async Task<Video> AddVideo(Video video)
     {
         await _db.Videos.AddAsync(video);
         await _db.SaveChangesAsync();
         return video;
+    }
+
+    public async Task<IEnumerable<ResponseVideoDto>> GetAllVideos()
+    {
+        var videos = await _db.Videos
+            .Include(v => v.Session)
+            .ThenInclude(s => s.SessionType)
+            .Include(v => v.Session)
+            .ThenInclude(s => s.Gp)
+            .ToListAsync();
+
+        return videos.Select(v => new ResponseVideoDto(
+            v.VideoId,
+            v.Name,
+            v.Session.SessionId,
+            v.Session.SessionType.Name,
+            v.Session.Gp.Date,
+            v.Session.Gp.Name
+        ));
     }
 }

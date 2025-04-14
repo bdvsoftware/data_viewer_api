@@ -15,7 +15,7 @@ public partial class Video
 
     public string Url { get; set; } = null!;
 
-    public double Duration { get; set; }
+    public double  Duration { get; set; }
 
     public int TotalFrames { get; set; }
 

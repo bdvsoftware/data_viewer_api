@@ -9,6 +9,7 @@ public interface IVideoService
 {
     Task<Boolean> ExistsVideoByName(string videoName);
     Task<UploadedVideoDto> UploadVideo(RequestUploadVideoDto request);
+    Task<IEnumerable<ResponseVideoDto>> GetVideos();
 }
 
 public class VideoService : IVideoService
@@ -62,5 +63,10 @@ public class VideoService : IVideoService
         }
 
         return new UploadedVideoDto(video.VideoId, video.Name, video.Url);
+    }
+
+    public async Task<IEnumerable<ResponseVideoDto>> GetVideos()
+    {
+        return await _videoRepository.GetAllVideos();
     }
 }
