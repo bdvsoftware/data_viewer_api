@@ -11,7 +11,14 @@ public partial class Frame
 
     public int Seq { get; set; }
 
-    public DateTime Timestamp { get; set; }
+    public int Timestamp { get; set; }
+
+    public Frame(int videoId, int seq, int timestamp)
+    {
+        VideoId = videoId;
+        Seq = seq;
+        Timestamp = timestamp;
+    }
 
     public virtual ICollection<DrivereyeFrame> DrivereyeFrames { get; set; } = new List<DrivereyeFrame>();
 

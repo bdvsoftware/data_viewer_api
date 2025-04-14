@@ -10,6 +10,7 @@ public interface IVideoService
     Task<Boolean> ExistsVideoByName(string videoName);
     Task<UploadedVideoDto> UploadVideo(RequestUploadVideoDto request);
     Task<IEnumerable<ResponseVideoDto>> GetVideos();
+    Task<List<FrameToProcessDto>> ProcessVideo(int videoId);
 }
 
 public class VideoService : IVideoService
@@ -21,17 +22,21 @@ public class VideoService : IVideoService
     private readonly ISessionTypeRepository _sessionTypeRepository;
 
     private readonly IGrandPrixRepository _grandPrixRepository;
+    
+    private readonly IFrameService _frameService;
 
     public VideoService(
         IVideoRepository videoRepository,
         ISessionRepository sessionRepository,
         ISessionTypeRepository sessionTypeRepository,
-        IGrandPrixRepository grandPrixRepository)
+        IGrandPrixRepository grandPrixRepository,
+        IFrameService frameService)
     {
         _videoRepository = videoRepository;
         _sessionRepository = sessionRepository;
         _sessionTypeRepository = sessionTypeRepository;
         _grandPrixRepository = grandPrixRepository;
+        _frameService = frameService;
     }
 
     public async Task<Boolean> ExistsVideoByName(string videoName)
@@ -68,5 +73,12 @@ public class VideoService : IVideoService
     public async Task<IEnumerable<ResponseVideoDto>> GetVideos()
     {
         return await _videoRepository.GetAllVideos();
+    }
+
+    public async Task<List<FrameToProcessDto>> ProcessVideo(int videoId)
+    {
+        var video = await _videoRepository.GetVideo(videoId);
+        
+        return await _frameService.ProduceFrames(video);
     }
 }

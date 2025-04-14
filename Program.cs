@@ -30,6 +30,11 @@ builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IGrandPrixRepository, GrandPrixRepository>();
 builder.Services.AddScoped<IGrandPrixService, GrandPrixService>();
 
+builder.Services.AddScoped<IFrameRepository, FrameRepository>();
+builder.Services.AddScoped<IFrameService, FrameService>();
+
+builder.Services.AddScoped<FrameKafkaProducer>();
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();

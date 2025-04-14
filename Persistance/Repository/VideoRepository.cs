@@ -10,6 +10,7 @@ public interface IVideoRepository
     Task<Video?> GetVideoByName(string videoName);
     Task<Video> AddVideo(Video video);
     Task<IEnumerable<ResponseVideoDto>> GetAllVideos();
+    Task<string> FindVideoPathById(int videoId);
 }
 
 public class VideoRepository : IVideoRepository
@@ -65,5 +66,19 @@ public class VideoRepository : IVideoRepository
             v.Session.Gp.Date,
             v.Session.Gp.Name
         ));
+    }
+
+    public async Task<string> FindVideoPathById(int videoId)
+    {
+        var path = await _db.Videos
+            .Select(v => v.Url)
+            .FirstOrDefaultAsync();
+
+        if (path is not null)
+        {
+            return path;
+        }
+
+        return "";
     }
 }

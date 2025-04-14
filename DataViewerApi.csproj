@@ -10,6 +10,9 @@
         <PackageReference Include="Confluent.Kafka" Version="2.9.0" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3" />
+        <PackageReference Include="OpenCvSharp4" Version="4.10.0.20241108" />
+        <PackageReference Include="OpenCvSharp4.Extensions" Version="4.10.0.20241108" />
+        <PackageReference Include="System.Drawing.Common" Version="9.0.4" />
     </ItemGroup>
 
 </Project>

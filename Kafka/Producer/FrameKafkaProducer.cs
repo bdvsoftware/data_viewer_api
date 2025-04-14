@@ -7,14 +7,14 @@ public class FrameKafkaProducer
     private readonly string _bootstrapServers = "localhost:19092";
     private readonly string _topic = "frame.to.process";
 
-    public async Task SendMessageAsync(RequestFrameDto requestFrameDto)
+    public async Task SendMessageAsync(FrameToProcessDto frame)
     {
         var config = new ProducerConfig
         {
             BootstrapServers = _bootstrapServers
         };
         
-        var json = JsonSerializer.Serialize(requestFrameDto);
+        var json = JsonSerializer.Serialize(frame);
 
         using var producer = new ProducerBuilder<Null, string>(config).Build();
 

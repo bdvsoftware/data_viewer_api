@@ -46,4 +46,11 @@ public class VideoController : ControllerBase
         var videos = await _videoService.GetVideos();
         return Ok(videos);
     }
+
+    [HttpPost("process/{videoId}")]
+    public async Task<ActionResult<ResponseVideoDto>> ProcessVideo(int videoId)
+    {
+        var frames = _videoService.ProcessVideo(videoId);
+        return Ok(frames);
+    }
 }
