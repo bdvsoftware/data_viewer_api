@@ -11,7 +11,12 @@ public class FrameRepository : IFrameRepository
 {
     
     private readonly ApplicationDbContext _db;
-    
+
+    public FrameRepository(ApplicationDbContext db)
+    {
+        _db = db;
+    }
+
     public async Task<Frame> AddFrame(Frame frame)
     {
         await _db.Frames.AddAsync(frame);

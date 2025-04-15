@@ -88,9 +88,6 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.DrivereyeFrameId).HasColumnName("drivereye_frame_id");
             entity.Property(e => e.DriverId).HasColumnName("driver_id");
             entity.Property(e => e.FrameId).HasColumnName("frame_id");
-            entity.Property(e => e.Timestamp)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("timestamp");
 
             entity.HasOne(d => d.Driver).WithMany(p => p.DrivereyeFrames)
                 .HasForeignKey(d => d.DriverId)
@@ -144,9 +141,6 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.OnboardFrameId).HasColumnName("onboard_frame_id");
             entity.Property(e => e.DriverId).HasColumnName("driver_id");
             entity.Property(e => e.FrameId).HasColumnName("frame_id");
-            entity.Property(e => e.Timestamp)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("timestamp");
 
             entity.HasOne(d => d.Driver).WithMany(p => p.OnboardFrames)
                 .HasForeignKey(d => d.DriverId)
@@ -167,9 +161,6 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.PitboostFrameId).HasColumnName("pitboost_frame_id");
             entity.Property(e => e.FrameId).HasColumnName("frame_id");
             entity.Property(e => e.Status).HasColumnName("status");
-            entity.Property(e => e.Timestamp)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("timestamp");
 
             entity.HasOne(d => d.Frame).WithMany(p => p.PitboostFrames)
                 .HasForeignKey(d => d.FrameId)
@@ -270,9 +261,6 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.WideshotFrameId).HasColumnName("wideshot_frame_id");
             entity.Property(e => e.Duration).HasColumnName("duration");
             entity.Property(e => e.FrameId).HasColumnName("frame_id");
-            entity.Property(e => e.Timestamp)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("timestamp");
             entity.Property(e => e.VideoUrl).HasColumnName("video_url");
 
             entity.HasOne(d => d.Frame).WithMany(p => p.WideshotFrames)
