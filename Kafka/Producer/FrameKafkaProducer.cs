@@ -11,7 +11,8 @@ public class FrameKafkaProducer
     {
         var config = new ProducerConfig
         {
-            BootstrapServers = _bootstrapServers
+            BootstrapServers = _bootstrapServers,
+            MessageMaxBytes = 10 * 1024 * 1024
         };
         
         var json = JsonSerializer.Serialize(frame);

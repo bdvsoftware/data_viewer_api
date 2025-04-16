@@ -51,7 +51,7 @@ public class FrameService : IFrameService
                 using (Bitmap bmp = BitmapConverter.ToBitmap(frame))
                 using (var ms = new MemoryStream())
                 {
-                    bmp.Save(ms, ImageFormat.Png);
+                    bmp.Save(ms, ImageFormat.Jpeg);
                     string base64Image = Convert.ToBase64String(ms.ToArray());
 
                     var savedFrame = await _frameRepository.AddFrame(

@@ -107,7 +107,7 @@ public partial class ApplicationDbContext : DbContext
 
             entity.Property(e => e.FrameId).HasColumnName("frame_id");
             entity.Property(e => e.Seq).HasColumnName("seq");
-            entity.Property(e => e.Timestamp);
+            entity.Property(e => e.Timestamp).HasColumnName("timestamp");
             entity.Property(e => e.VideoId).HasColumnName("video_id");
 
             entity.HasOne(d => d.Video).WithMany(p => p.Frames)
