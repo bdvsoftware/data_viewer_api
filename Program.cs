@@ -20,7 +20,12 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 1024 * 1024 * 1024;
+    options.MultipartBodyLengthLimit = 1_000_000_000; // 1 GB o lo que necesites
+});
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = long.MaxValue;
 });
 
 // Register the repositories and services
