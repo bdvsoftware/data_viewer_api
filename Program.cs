@@ -1,4 +1,5 @@
 using System.Text.Json;
+using DataViewerApi.Kafka.Consumer;
 using DataViewerApi.Persistance.Repository;
 using DataViewerApi.Persistance.Entity;
 using DataViewerApi.Service;
@@ -45,6 +46,7 @@ builder.Services.AddScoped<IFrameRepository, FrameRepository>();
 builder.Services.AddScoped<IFrameService, FrameService>();
 
 builder.Services.AddScoped<FrameKafkaProducer>();
+builder.Services.AddHostedService<FrameProcessedKafkaConsumer>();
 
 var app = builder.Build();
 
