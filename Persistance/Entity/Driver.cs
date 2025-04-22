@@ -20,6 +20,8 @@ public partial class Driver
     public virtual Team Team { get; set; } = null!;
 
     public virtual ICollection<PitboostFrame> PitboostFrames { get; set; } = new List<PitboostFrame>();
+    
+    public virtual ICollection<BatteryFrame> BatteryFrames { get; set; } = new List<BatteryFrame>();
 
     public virtual ICollection<WideshotFrame> WideshotFrames { get; set; } = new List<WideshotFrame>();
 }

@@ -25,6 +25,8 @@ public partial class Frame
     public virtual ICollection<OnboardFrame> OnboardFrames { get; set; } = new List<OnboardFrame>();
 
     public virtual ICollection<PitboostFrame> PitboostFrames { get; set; } = new List<PitboostFrame>();
+    
+    public virtual ICollection<BatteryFrame> BatteryFrames { get; set; } = new List<BatteryFrame>();
 
     public virtual Video Video { get; set; } = null!;
 

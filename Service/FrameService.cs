@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
 using DataViewerApi.Dto;
+using DataViewerApi.Kafka.Consumer;
 using DataViewerApi.Persistance.Entity;
 using DataViewerApi.Persistance.Repository;
 using OpenCvSharp;
@@ -11,6 +12,7 @@ namespace DataViewerApi.Service;
 public interface IFrameService
 {
     Task<List<FrameToProcessDto>> ProduceFrames(Video video);
+    Task ReceiveProcessedFrame(ProcessedFrameDto processedFrame);
 }
 
 public class FrameService : IFrameService
@@ -32,7 +34,7 @@ public class FrameService : IFrameService
         var capture = new VideoCapture(video.Url);
 
         if (!capture.IsOpened())
-            throw new Exception("No se pudo abrir el video.");
+            throw new Exception("Error accessing video");
 
         double fps = capture.Fps;
         double totalFrames = capture.FrameCount;
@@ -78,5 +80,10 @@ public class FrameService : IFrameService
 
         capture.Release();
         return frames;
+    }
+
+    public Task ReceiveProcessedFrame(ProcessedFrameDto processedFrame)
+    {
+        
     }
 }

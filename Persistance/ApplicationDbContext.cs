@@ -184,6 +184,39 @@ public partial class ApplicationDbContext : DbContext
                         j.IndexerProperty<int>("DriverId").HasColumnName("driver_id");
                     });
         });
+        
+        modelBuilder.Entity<BatteryFrame>(entity =>
+        {
+            entity.HasKey(e => e.BatteryFrameId).HasName("battery_frame_pkey");
+
+            entity.ToTable("battery_frame");
+
+            entity.Property(e => e.BatteryFrameId).HasColumnName("battery_frame_id");
+            entity.Property(e => e.FrameId).HasColumnName("frame_id");
+            entity.Property(e => e.Lap).HasColumnName("lap");
+
+            entity.HasOne(d => d.Frame).WithMany(p => p.BatteryFrames)
+                .HasForeignKey(d => d.FrameId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("pitboost_frame_frame_id_fkey");
+
+            entity.HasMany(d => d.Drivers).WithMany(p => p.BatteryFrames)
+                .UsingEntity<Dictionary<string, object>>(
+                    "BatteryFrameDriver",
+                    r => r.HasOne<Driver>().WithMany()
+                        .HasForeignKey("DriverId")
+                        .HasConstraintName("battery_frame_driver_driver_id_fkey"),
+                    l => l.HasOne<BatteryFrame>().WithMany()
+                        .HasForeignKey("BatterytFrameId")
+                        .HasConstraintName("battery_frame_driver_battery_frame_id_fkey"),
+                    j =>
+                    {
+                        j.HasKey("BatteryFrameId", "DriverId").HasName("battery_frame_driver_pkey");
+                        j.ToTable("battery_frame_driver");
+                        j.IndexerProperty<int>("BatteryFrameId").HasColumnName("battery_frame_id");
+                        j.IndexerProperty<int>("DriverId").HasColumnName("driver_id");
+                    });
+        });
 
         modelBuilder.Entity<Session>(entity =>
         {

@@ -16,4 +16,10 @@ public partial class OnboardFrame
     public virtual Driver? Driver { get; set; }
 
     public virtual Frame Frame { get; set; } = null!;
+
+    public OnboardFrame(int frameId, int? driverId)
+    {
+        FrameId = frameId;
+        DriverId = driverId;
+    }
 }
