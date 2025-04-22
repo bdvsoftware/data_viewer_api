@@ -36,9 +36,12 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<Video> Videos { get; set; }
 
     public virtual DbSet<WideshotFrame> WideshotFrames { get; set; }
+    
+    public virtual DbSet<BatteryFrame> BatteryFrames { get; set; }
+    
+    public virtual DbSet<BatteryFrameDriver> BatteryFrameDrivers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseNpgsql("Host=localhost:5432;Database=data_viewer;Username=postgres;Password=root");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -52,6 +55,7 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.DriverId).HasColumnName("driver_id");
             entity.Property(e => e.Name).HasColumnName("name");
             entity.Property(e => e.Number).HasColumnName("number");
+            entity.Property(e => e.Abbreviation).HasColumnName("abbreviation");
             entity.Property(e => e.TeamId).HasColumnName("team_id");
 
             entity.HasOne(d => d.Team).WithMany(p => p.Drivers)
@@ -187,7 +191,8 @@ public partial class ApplicationDbContext : DbContext
         
         modelBuilder.Entity<BatteryFrame>(entity =>
         {
-            entity.HasKey(e => e.BatteryFrameId).HasName("battery_frame_pkey");
+            entity.HasKey(e => e.BatteryFrameId)
+                .HasName("battery_frame_pkey");
 
             entity.ToTable("battery_frame");
 
@@ -195,28 +200,44 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.FrameId).HasColumnName("frame_id");
             entity.Property(e => e.Lap).HasColumnName("lap");
 
-            entity.HasOne(d => d.Frame).WithMany(p => p.BatteryFrames)
-                .HasForeignKey(d => d.FrameId)
+            entity.HasOne(e => e.Frame)
+                .WithMany(f => f.BatteryFrames)
+                .HasForeignKey(e => e.FrameId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("pitboost_frame_frame_id_fkey");
 
-            entity.HasMany(d => d.Drivers).WithMany(p => p.BatteryFrames)
-                .UsingEntity<Dictionary<string, object>>(
-                    "BatteryFrameDriver",
-                    r => r.HasOne<Driver>().WithMany()
-                        .HasForeignKey("DriverId")
-                        .HasConstraintName("battery_frame_driver_driver_id_fkey"),
-                    l => l.HasOne<BatteryFrame>().WithMany()
-                        .HasForeignKey("BatterytFrameId")
-                        .HasConstraintName("battery_frame_driver_battery_frame_id_fkey"),
-                    j =>
-                    {
-                        j.HasKey("BatteryFrameId", "DriverId").HasName("battery_frame_driver_pkey");
-                        j.ToTable("battery_frame_driver");
-                        j.IndexerProperty<int>("BatteryFrameId").HasColumnName("battery_frame_id");
-                        j.IndexerProperty<int>("DriverId").HasColumnName("driver_id");
-                    });
+            entity.HasMany(e => e.BatteryFrameDrivers)
+                .WithOne(d => d.BatteryFrame)
+                .HasForeignKey(d => d.BatteryFrameId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("battery_frame_driver_battery_frame_id_fkey");
         });
+
+        
+        modelBuilder.Entity<BatteryFrameDriver>(entity =>
+        {
+            entity.ToTable("battery_frame_driver");
+
+            entity.HasKey(e => new { e.BatteryFrameId, e.DriverId })
+                .HasName("battery_frame_driver_pkey");
+
+            entity.Property(e => e.BatteryFrameId).HasColumnName("battery_frame_id");
+            entity.Property(e => e.DriverId).HasColumnName("driver_id");
+            entity.Property(e => e.Status).HasColumnName("status");
+
+            entity.HasOne(e => e.BatteryFrame)
+                .WithMany(b => b.BatteryFrameDrivers)
+                .HasForeignKey(e => e.BatteryFrameId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("battery_frame_driver_battery_frame_id_fkey");
+
+            entity.HasOne(e => e.Driver)
+                .WithMany(d => d.BatteryFrameDrivers)
+                .HasForeignKey(e => e.DriverId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("battery_frame_driver_driver_id_fkey");
+        });
+
 
         modelBuilder.Entity<Session>(entity =>
         {

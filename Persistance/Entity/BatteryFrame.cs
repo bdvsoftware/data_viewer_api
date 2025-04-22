@@ -6,9 +6,8 @@ public partial class BatteryFrame
     public int FrameId { get; set; }
     public int Lap { get; set; }
     
-    public virtual Frame Frame { get; set; } = null!;
-
-    public virtual ICollection<Driver> Drivers { get; set; } = new List<Driver>();
+    public Frame Frame { get; set; }
+    public ICollection<BatteryFrameDriver> BatteryFrameDrivers { get; set; }
 
     public BatteryFrame(int frameId, int lap)
     {

@@ -84,6 +84,7 @@ public class FrameService : IFrameService
 
     public Task ReceiveProcessedFrame(ProcessedFrameDto processedFrame)
     {
-        
+        Console.WriteLine($"Received frame {processedFrame.FrameId}");
+        return Task.CompletedTask;
     }
 }
