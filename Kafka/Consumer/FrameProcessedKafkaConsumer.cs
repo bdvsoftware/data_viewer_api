@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using Confluent.Kafka;
 using DataViewerApi.Dto;
+using DataViewerApi.Service;
 
 namespace DataViewerApi.Kafka.Consumer;
 
@@ -13,9 +14,13 @@ public class FrameProcessedKafkaConsumer : BackgroundService
     private readonly string _groupId = "videoprocessor-consumer";
     private readonly ConsumerConfig _config;
     private IConsumer<Ignore, string> _consumer;
+    
+    private readonly IFrameService _frameService;
 
-    public FrameProcessedKafkaConsumer(ILogger<FrameProcessedKafkaConsumer> logger)
+    public FrameProcessedKafkaConsumer(ILogger<FrameProcessedKafkaConsumer> logger, IFrameService frameService)
     {
+        _frameService = frameService;
+        
         _logger = logger;
 
         _config = new ConsumerConfig
@@ -31,7 +36,7 @@ public class FrameProcessedKafkaConsumer : BackgroundService
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return Task.Run(() =>
+        return Task.Run(async () =>
         {
             try
             {
@@ -39,12 +44,20 @@ public class FrameProcessedKafkaConsumer : BackgroundService
                 {
                     var consumeResult = _consumer.Consume(stoppingToken);
                     var processedFrame = JsonSerializer.Deserialize<ProcessedFrameDto>(consumeResult.Message.Value);
+                    if (processedFrame != null)
+                    {
+                        await _frameService.ReceiveProcessedFrame(processedFrame);
+                    }
                     _logger.LogInformation($"Message received: {consumeResult.Message.Value}");
                 }
             }
             catch (OperationCanceledException)
             {
                 _logger.LogInformation("Consumer cancelled.");
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError(ex.ToString());
             }
             finally
             {

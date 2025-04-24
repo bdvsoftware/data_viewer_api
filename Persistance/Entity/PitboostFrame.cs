@@ -11,8 +11,6 @@ public partial class PitboostFrame
 
     public int? Status { get; set; }
 
-    public DateTime Timestamp { get; set; }
-
     public virtual Frame Frame { get; set; } = null!;
 
     public virtual ICollection<Driver> Drivers { get; set; } = new List<Driver>();

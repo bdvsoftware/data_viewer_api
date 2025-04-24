@@ -8,4 +8,11 @@ public class BatteryFrameDriver
 
     public BatteryFrame BatteryFrame { get; set; }
     public Driver Driver { get; set; }
+
+    public BatteryFrameDriver(int batteryFrameId, int driverId, int status)
+    {
+        BatteryFrameId = batteryFrameId;
+        DriverId = driverId;
+        Status = status;
+    }
 }

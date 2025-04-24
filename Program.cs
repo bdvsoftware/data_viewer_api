@@ -45,9 +45,21 @@ builder.Services.AddScoped<IGrandPrixService, GrandPrixService>();
 builder.Services.AddScoped<IFrameRepository, FrameRepository>();
 builder.Services.AddScoped<IFrameService, FrameService>();
 
+builder.Services.AddScoped<IBatteryFrameService, BatteryFrameService>();
+builder.Services.AddScoped<IBatteryFrameRepository, BatteryFrameRepository>();
+builder.Services.AddScoped<IBatteryFrameDriverRepository, BatteryFrameDriverRepository>();
+
+builder.Services.AddScoped<IOnboardHelmetFrameService, OnboardHelmetFrameService>();
+builder.Services.AddScoped<IDrivereyeFrameRepository, DrivereyeFrameRepository>();
+
+builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+
+builder.Services.AddScoped<IOnboardFrameRepository, OnboardFrameRepository>();
+
+builder.Services.AddScoped<IDriverRepository, DriverRepository>();
+
 builder.Services.AddScoped<FrameKafkaProducer>();
 builder.Services.AddHostedService<FrameProcessedKafkaConsumer>();
-
 var app = builder.Build();
 
 app.UseHttpsRedirection();

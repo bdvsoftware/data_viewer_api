@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
 using DataViewerApi.Dto;
-using DataViewerApi.Kafka.Consumer;
+using System;
 using DataViewerApi.Persistance.Entity;
 using DataViewerApi.Persistance.Repository;
 using OpenCvSharp;
@@ -21,20 +21,27 @@ public class FrameService : IFrameService
 
     private readonly IFrameRepository _frameRepository;
 
-    public FrameService(FrameKafkaProducer frameKafkaProducer, IFrameRepository frameRepository)
+    private readonly IOnboardHelmetFrameService _onboardHelmetFrameService;
+
+    private readonly IBatteryFrameService _batteryFrameService;
+
+    public FrameService(FrameKafkaProducer frameKafkaProducer, IFrameRepository frameRepository,
+        IOnboardHelmetFrameService onboardHelmetFrameService, IBatteryFrameService batteryFrameService)
     {
         _frameKafkaProducer = frameKafkaProducer;
         _frameRepository = frameRepository;
+        _onboardHelmetFrameService = onboardHelmetFrameService;
+        _batteryFrameService = batteryFrameService;
     }
 
     public async Task<List<FrameToProcessDto>> ProduceFrames(Video video)
     {
         var frames = new List<FrameToProcessDto>();
-        
+
         var capture = new VideoCapture(video.Url);
 
         if (!capture.IsOpened())
-            throw new Exception("Error accessing video");
+            throw new System.Exception("Error accessing video");
 
         double fps = capture.Fps;
         double totalFrames = capture.FrameCount;
@@ -72,7 +79,7 @@ public class FrameService : IFrameService
                     );
 
                     await _frameKafkaProducer.SendMessageAsync(meesage);
-                    
+
                     frames.Add(meesage);
                 }
             }
@@ -82,9 +89,29 @@ public class FrameService : IFrameService
         return frames;
     }
 
-    public Task ReceiveProcessedFrame(ProcessedFrameDto processedFrame)
+    public async Task ReceiveProcessedFrame(ProcessedFrameDto processedFrame)
     {
-        Console.WriteLine($"Received frame {processedFrame.FrameId}");
-        return Task.CompletedTask;
+        try
+        {
+            if (processedFrame.OnboardHelmetDto != null)
+            {
+                await _onboardHelmetFrameService.ProcessOnboardHelmetFrame(
+                    processedFrame.FrameId,
+                    processedFrame.OnboardHelmetDto
+                );
+            }
+
+            if (processedFrame.BatteryDriverDataDto != null)
+            {
+                await _batteryFrameService.ProcessBatteryFrame(
+                    processedFrame.FrameId,
+                    processedFrame.BatteryDriverDataDto
+                );
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Console.Write(ex.Message);
+        }
     }
 }

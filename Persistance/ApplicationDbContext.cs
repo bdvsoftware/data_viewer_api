@@ -313,9 +313,7 @@ public partial class ApplicationDbContext : DbContext
             entity.ToTable("wideshot_frame");
 
             entity.Property(e => e.WideshotFrameId).HasColumnName("wideshot_frame_id");
-            entity.Property(e => e.Duration).HasColumnName("duration");
             entity.Property(e => e.FrameId).HasColumnName("frame_id");
-            entity.Property(e => e.VideoUrl).HasColumnName("video_url");
 
             entity.HasOne(d => d.Frame).WithMany(p => p.WideshotFrames)
                 .HasForeignKey(d => d.FrameId)

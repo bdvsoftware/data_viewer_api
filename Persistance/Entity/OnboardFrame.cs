@@ -11,8 +11,6 @@ public partial class OnboardFrame
 
     public int? DriverId { get; set; }
 
-    public DateTime Timestamp { get; set; }
-
     public virtual Driver? Driver { get; set; }
 
     public virtual Frame Frame { get; set; } = null!;

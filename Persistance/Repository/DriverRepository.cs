@@ -10,6 +10,7 @@ public interface IDriverRepository
     public Task<Driver?> GetDriverByAbbreviation(string abbreviation);
     public Task<Driver?> GetDriverByName(string name);
     public Task<Driver?> GetDriverByLowerCaseName(string name);
+    public Task<string?> GetDriverTeamNameByAbbreviation(string abbreviation);
 }
 
 public class DriverRepository : IDriverRepository
@@ -42,5 +43,13 @@ public class DriverRepository : IDriverRepository
     public Task<Driver?> GetDriverByLowerCaseName(string lowerCaseName)
     {
         return _db.Drivers.FirstOrDefaultAsync(d => d.Name.ToLower() == lowerCaseName);
+    }
+
+    public async Task<string?> GetDriverTeamNameByAbbreviation(string abbreviation)
+    {
+        return await _db.Drivers
+            .Where(d => d.Abbreviation == abbreviation)
+            .Select(d => d.Team.Name)
+            .FirstOrDefaultAsync();
     }
 }
