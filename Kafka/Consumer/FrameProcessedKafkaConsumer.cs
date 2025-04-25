@@ -15,11 +15,11 @@ public class FrameProcessedKafkaConsumer : BackgroundService
     private readonly ConsumerConfig _config;
     private IConsumer<Ignore, string> _consumer;
     
-    private readonly IFrameService _frameService;
+    private readonly IServiceProvider _serviceProvider;
 
-    public FrameProcessedKafkaConsumer(ILogger<FrameProcessedKafkaConsumer> logger, IFrameService frameService)
+    public FrameProcessedKafkaConsumer(ILogger<FrameProcessedKafkaConsumer> logger, IServiceProvider serviceProvider)
     {
-        _frameService = frameService;
+        _serviceProvider = serviceProvider;
         
         _logger = logger;
 
@@ -46,7 +46,11 @@ public class FrameProcessedKafkaConsumer : BackgroundService
                     var processedFrame = JsonSerializer.Deserialize<ProcessedFrameDto>(consumeResult.Message.Value);
                     if (processedFrame != null)
                     {
-                        await _frameService.ReceiveProcessedFrame(processedFrame);
+                        using (var scope = _serviceProvider.CreateScope())
+                        {
+                            var frameService = scope.ServiceProvider.GetRequiredService<IFrameService>();
+                            await frameService.ReceiveProcessedFrame(processedFrame);
+                        }
                     }
                     _logger.LogInformation($"Message received: {consumeResult.Message.Value}");
                 }
