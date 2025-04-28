@@ -14,8 +14,8 @@ public interface IDriverRepository
     public Task<string?> GetDriverTeamNameByAbbreviation(string abbreviation);
     public Task<IEnumerable<int>> GetDriversIds();
     public Task<string?> GetDriverAbbreviationByDriverId(int driverId);
-    public Task<IEnumerable<DriverOnboardDto>> GetDriverOnboardData(int driverId);
-    public Task<IEnumerable<DriverBatteryDto>> GetDriverBatteryData(int driverId);
+    public Task<IEnumerable<DriverOnboardDto>> GetDriverOnboardData(int driverId, int videoId);
+    public Task<IEnumerable<DriverBatteryDto>> GetDriverBatteryData(int driverId, int videoId);
     public Task<DriverNameDto> GetDriverNameAndAbrreviation(int driverId);
 }
 
@@ -65,14 +65,15 @@ public class DriverRepository : IDriverRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<DriverOnboardDto>> GetDriverOnboardData(int driverId)
+    public async Task<IEnumerable<DriverOnboardDto>> GetDriverOnboardData(int driverId, int videoId)
     {
         var result = await (
             from driver in _db.Drivers
             join team in _db.Teams on driver.TeamId equals team.TeamId
             join onboard_frame in _db.OnboardFrames on driver.DriverId equals onboard_frame.DriverId
             join frame in _db.Frames on onboard_frame.FrameId equals frame.FrameId
-            where driver.DriverId == driverId
+            join video in _db.Videos on frame.VideoId equals video.VideoId
+            where driver.DriverId == driverId && video.VideoId == videoId
             select new DriverOnboardDto(
                 driver.Name,
                 driver.Abbreviation,
@@ -85,7 +86,7 @@ public class DriverRepository : IDriverRepository
         return result;
     }
 
-    public async Task<IEnumerable<DriverBatteryDto>> GetDriverBatteryData(int driverId)
+    public async Task<IEnumerable<DriverBatteryDto>> GetDriverBatteryData(int driverId, int videoId)
     {
         var result = await (
             from driver in _db.Drivers
@@ -93,8 +94,9 @@ public class DriverRepository : IDriverRepository
             join battery_frame in _db.BatteryFrames on battery_frame_driver.BatteryFrameId equals battery_frame
                 .BatteryFrameId
             join frame in _db.Frames on battery_frame.FrameId equals frame.FrameId
+            join video in _db.Videos on frame.VideoId equals video.VideoId
             join team in _db.Teams on driver.TeamId equals team.TeamId
-            where driver.DriverId == driverId
+            where driver.DriverId == driverId && video.VideoId == videoId
             select new DriverBatteryDto(
                 driver.Name,
                 driver.Abbreviation,

@@ -11,7 +11,7 @@ public interface IVideoService
     Task<UploadedVideoDto> UploadVideo(RequestUploadVideoDto request);
     Task<IEnumerable<ResponseVideoDto>> GetVideos();
     Task<List<FrameToProcessDto>> ProcessVideo(int videoId);
-    Task<Dictionary<string, DriverVideoDto>> GetVideoData();
+    Task<Dictionary<string, DriverVideoDto>> GetVideoData(int videoId);
 }
 
 public class VideoService : IVideoService
@@ -81,7 +81,7 @@ public class VideoService : IVideoService
         return await _frameService.ProduceFrames(video);
     }
     
-    public async Task<Dictionary<string, DriverVideoDto>> GetVideoData()
+    public async Task<Dictionary<string, DriverVideoDto>> GetVideoData(int videoId)
     {
         var driverIds = await _driverRepository.GetDriversIds();
         var dict = new Dictionary<string, DriverVideoDto>();
@@ -89,15 +89,12 @@ public class VideoService : IVideoService
         {
             var driverNameData = await _driverRepository.GetDriverNameAndAbrreviation(driverId);
             var key = "(" + driverNameData.DriverName + ") " + driverNameData.DriverName;
-            var onboardData = await _driverRepository.GetDriverOnboardData(driverId);
-            var batteryData = await _driverRepository.GetDriverBatteryData(driverId);
+            var onboardData = await _driverRepository.GetDriverOnboardData(driverId, videoId);
+            var batteryData = await _driverRepository.GetDriverBatteryData(driverId, videoId);
             var driverData = new DriverVideoDto(onboardData, batteryData);
-            if (!dict.ContainsKey(key))
-            {
-                dict.Add(key, driverData);
-            }
+            
+            dict.TryAdd(key, driverData);
         }
-
         return dict;
     }
 }

@@ -57,7 +57,7 @@ public class VideoController : ControllerBase
     [HttpGet("data/{videoId}")]
     public async Task<IActionResult> GetVideoData(int videoId)
     {
-        var data = await _videoService.GetVideoData();
+        var data = await _videoService.GetVideoData(videoId);
         return Ok(data);
     }
 }
