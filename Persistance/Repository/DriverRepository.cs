@@ -14,7 +14,9 @@ public interface IDriverRepository
     public Task<string?> GetDriverTeamNameByAbbreviation(string abbreviation);
     public Task<IEnumerable<int>> GetDriversIds();
     public Task<string?> GetDriverAbbreviationByDriverId(int driverId);
-    public Task<Dictionary<string, DriverVideoDto>> GetDriverOnboardData();
+    public Task<IEnumerable<DriverOnboardDto>> GetDriverOnboardData(int driverId);
+    public Task<IEnumerable<DriverBatteryDto>> GetDriverBatteryData(int driverId);
+    public Task<DriverNameDto> GetDriverNameAndAbrreviation(int driverId);
 }
 
 public class DriverRepository : IDriverRepository
@@ -63,7 +65,7 @@ public class DriverRepository : IDriverRepository
             .ToListAsync();
     }
 
-    private async Task<IEnumerable<DriverOnboardDto>> GetDriverOnboardData(int driverId)
+    public async Task<IEnumerable<DriverOnboardDto>> GetDriverOnboardData(int driverId)
     {
         var result = await (
             from driver in _db.Drivers
@@ -83,7 +85,7 @@ public class DriverRepository : IDriverRepository
         return result;
     }
 
-    private async Task<IEnumerable<DriverBatteryDto>> GetDriverBatteryData(int driverId)
+    public async Task<IEnumerable<DriverBatteryDto>> GetDriverBatteryData(int driverId)
     {
         var result = await (
             from driver in _db.Drivers
@@ -113,17 +115,15 @@ public class DriverRepository : IDriverRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task<Dictionary<string, DriverVideoDto>> GetDriverOnboardData()
+    public async Task<DriverNameDto> GetDriverNameAndAbrreviation(int driverId)
     {
-        var driverIds = await GetDriversIds();
-        var tree = new Dictionary<string, DriverOnboardDto>();
-        foreach (var driverId in driverIds)
-        {
-            var driverAbbr = await GetDriverAbbreviationByDriverId(driverId);
-            var onboardData = await GetDriverOnboardData(driverId);
-            var batteryData = await GetDriverBatteryData(driverId);
-        }
-        //TO-DO 
-        return null;
+        var result = await (
+            from driver in _db.Drivers
+            where driver.DriverId == driverId
+            select new DriverNameDto(
+                driver.Name,
+                driver.Abbreviation
+            )).FirstAsync();
+        return result;
     }
 }

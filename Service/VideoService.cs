@@ -11,6 +11,7 @@ public interface IVideoService
     Task<UploadedVideoDto> UploadVideo(RequestUploadVideoDto request);
     Task<IEnumerable<ResponseVideoDto>> GetVideos();
     Task<List<FrameToProcessDto>> ProcessVideo(int videoId);
+    Task<Dictionary<string, DriverVideoDto>> GetVideoData();
 }
 
 public class VideoService : IVideoService
@@ -23,19 +24,17 @@ public class VideoService : IVideoService
 
     private readonly IGrandPrixRepository _grandPrixRepository;
     
+    private readonly IDriverRepository _driverRepository;
+    
     private readonly IFrameService _frameService;
 
-    public VideoService(
-        IVideoRepository videoRepository,
-        ISessionRepository sessionRepository,
-        ISessionTypeRepository sessionTypeRepository,
-        IGrandPrixRepository grandPrixRepository,
-        IFrameService frameService)
+    public VideoService(IVideoRepository videoRepository, ISessionRepository sessionRepository, ISessionTypeRepository sessionTypeRepository, IGrandPrixRepository grandPrixRepository, IDriverRepository driverRepository, IFrameService frameService)
     {
         _videoRepository = videoRepository;
         _sessionRepository = sessionRepository;
         _sessionTypeRepository = sessionTypeRepository;
         _grandPrixRepository = grandPrixRepository;
+        _driverRepository = driverRepository;
         _frameService = frameService;
     }
 
@@ -80,5 +79,25 @@ public class VideoService : IVideoService
         var video = await _videoRepository.GetVideo(videoId);
         
         return await _frameService.ProduceFrames(video);
+    }
+    
+    public async Task<Dictionary<string, DriverVideoDto>> GetVideoData()
+    {
+        var driverIds = await _driverRepository.GetDriversIds();
+        var dict = new Dictionary<string, DriverVideoDto>();
+        foreach (var driverId in driverIds)
+        {
+            var driverNameData = await _driverRepository.GetDriverNameAndAbrreviation(driverId);
+            var key = "(" + driverNameData.DriverName + ") " + driverNameData.DriverName;
+            var onboardData = await _driverRepository.GetDriverOnboardData(driverId);
+            var batteryData = await _driverRepository.GetDriverBatteryData(driverId);
+            var driverData = new DriverVideoDto(onboardData, batteryData);
+            if (!dict.ContainsKey(key))
+            {
+                dict.Add(key, driverData);
+            }
+        }
+
+        return dict;
     }
 }
