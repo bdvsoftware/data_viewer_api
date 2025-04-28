@@ -50,7 +50,7 @@ public class VideoController : ControllerBase
     [HttpPost("process/{videoId}")]
     public async Task<ActionResult<ResponseVideoDto>> ProcessVideo(int videoId)
     {
-        var frames = await _videoService.ProcessVideo(videoId);
+        var frames = await _videoService.StartVideoProcessing(videoId);
         return Ok(frames);
     }
 

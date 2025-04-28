@@ -8,8 +8,9 @@ public class ResponseVideoDto
     public string SessionName { get; set; }
     public DateOnly Date { get; set; }
     public string GpName { get; set; }
+    public string Status { get; set; }
 
-    public ResponseVideoDto(int videoId, string videoName, int sessionId, string sessionName, DateOnly date, string gpName)
+    public ResponseVideoDto(int videoId, string videoName, int sessionId, string sessionName, DateOnly date, string gpName, string status)
     {
         VideoId = videoId;
         VideoName = videoName;
@@ -17,5 +18,6 @@ public class ResponseVideoDto
         SessionName = sessionName;
         Date = date;
         GpName = gpName;
+        Status = status;
     }
 }

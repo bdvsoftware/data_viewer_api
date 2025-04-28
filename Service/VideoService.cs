@@ -10,7 +10,7 @@ public interface IVideoService
     Task<Boolean> ExistsVideoByName(string videoName);
     Task<UploadedVideoDto> UploadVideo(RequestUploadVideoDto request);
     Task<IEnumerable<ResponseVideoDto>> GetVideos();
-    Task<List<FrameToProcessDto>> ProcessVideo(int videoId);
+    Task<List<FrameToProcessDto>> StartVideoProcessing(int videoId);
     Task<Dictionary<string, DriverVideoDto>> GetVideoData(int videoId);
 }
 
@@ -74,7 +74,7 @@ public class VideoService : IVideoService
         return await _videoRepository.GetAllVideos();
     }
 
-    public async Task<List<FrameToProcessDto>> ProcessVideo(int videoId)
+    public async Task<List<FrameToProcessDto>> StartVideoProcessing(int videoId)
     {
         var video = await _videoRepository.GetVideo(videoId);
         

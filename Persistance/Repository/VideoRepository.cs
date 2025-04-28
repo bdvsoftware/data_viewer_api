@@ -7,10 +7,13 @@ namespace DataViewerApi.Persistance.Repository;
 public interface IVideoRepository
 {
     Task<Video> GetVideo(int videoId);
+    Task UpdateVideo(Video video);
     Task<Video?> GetVideoByName(string videoName);
     Task<Video> AddVideo(Video video);
     Task<IEnumerable<ResponseVideoDto>> GetAllVideos();
     Task<string> FindVideoPathById(int videoId);
+    Task<int> GetVideoFrameCount(int videoId);
+    Task UpdateVideoStatus(int videoId, string status);
 }
 
 public class VideoRepository : IVideoRepository
@@ -64,7 +67,8 @@ public class VideoRepository : IVideoRepository
             v.Session.SessionId,
             v.Session.SessionType.Name,
             v.Session.Gp.Date,
-            v.Session.Gp.Name
+            v.Session.Gp.Name,
+            v.Status
         ));
     }
 
@@ -80,5 +84,26 @@ public class VideoRepository : IVideoRepository
         }
 
         return "";
+    }
+
+    public async Task UpdateVideo(Video video)
+    {
+        _db.Videos.Update(video);
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task<int> GetVideoFrameCount(int videoId)
+    {
+        return await _db.Videos
+            .Where(v => v.VideoId == videoId)
+            .Select(v => v.TotalFrames)
+            .FirstAsync();
+    }
+
+    public async Task UpdateVideoStatus(int videoId, string status)
+    {
+        var video = await GetVideo(videoId);
+        video.Status = status;
+        await UpdateVideo(video);
     }
 }

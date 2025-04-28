@@ -4,6 +4,8 @@ using DataViewerApi.Dto;
 using System;
 using DataViewerApi.Persistance.Entity;
 using DataViewerApi.Persistance.Repository;
+using DataViewerApi.Utils;
+using Microsoft.VisualBasic.CompilerServices;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
 
@@ -20,16 +22,18 @@ public class FrameService : IFrameService
     private readonly FrameKafkaProducer _frameKafkaProducer;
 
     private readonly IFrameRepository _frameRepository;
+    
+    private readonly IVideoRepository _videoRepository;
 
     private readonly IOnboardHelmetFrameService _onboardHelmetFrameService;
 
     private readonly IBatteryFrameService _batteryFrameService;
 
-    public FrameService(FrameKafkaProducer frameKafkaProducer, IFrameRepository frameRepository,
-        IOnboardHelmetFrameService onboardHelmetFrameService, IBatteryFrameService batteryFrameService)
+    public FrameService(FrameKafkaProducer frameKafkaProducer, IFrameRepository frameRepository, IVideoRepository videoRepository, IOnboardHelmetFrameService onboardHelmetFrameService, IBatteryFrameService batteryFrameService)
     {
         _frameKafkaProducer = frameKafkaProducer;
         _frameRepository = frameRepository;
+        _videoRepository = videoRepository;
         _onboardHelmetFrameService = onboardHelmetFrameService;
         _batteryFrameService = batteryFrameService;
     }
@@ -46,6 +50,8 @@ public class FrameService : IFrameService
         double fps = capture.Fps;
         double totalFrames = capture.FrameCount;
         double durationSeconds = totalFrames / fps;
+
+        int frameCount = 1;
 
         for (int second = 0; second < (int)durationSeconds; second++)
         {
@@ -78,15 +84,27 @@ public class FrameService : IFrameService
                         base64Image
                     );
 
+                    await UpdateVideoFramesAndDuration(video.VideoId, frameCount, durationSeconds);
+
                     await _frameKafkaProducer.SendMessageAsync(meesage);
 
                     frames.Add(meesage);
+                    frameCount++;
                 }
             }
         }
 
         capture.Release();
+        await _videoRepository.UpdateVideoStatus(video.VideoId, Constants.VideoStatus.Processing);
         return frames;
+    }
+
+    private async Task UpdateVideoFramesAndDuration(int videoId, double totalFrames, double durationSeconds)
+    {
+        var video = await _videoRepository.GetVideo(videoId);
+        video.TotalFrames = IntegerType.FromObject(totalFrames);
+        video.Duration = IntegerType.FromObject(durationSeconds);
+        await _videoRepository.UpdateVideo(video);
     }
 
     public async Task ReceiveProcessedFrame(ProcessedFrameDto processedFrame)
@@ -107,6 +125,12 @@ public class FrameService : IFrameService
                     processedFrame.FrameId,
                     processedFrame.BatteryDriverDataDto
                 );
+            }
+            
+            var totalVideoFrames = await _videoRepository.GetVideoFrameCount(processedFrame.VideoId);
+            if (processedFrame.FrameSeq.Equals(totalVideoFrames))
+            {
+                await _videoRepository.UpdateVideoStatus(processedFrame.VideoId, Constants.VideoStatus.Processed);
             }
         }
         catch (System.Exception ex)
