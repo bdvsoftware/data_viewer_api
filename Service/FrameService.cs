@@ -128,7 +128,7 @@ public class FrameService : IFrameService
             }
             
             var totalVideoFrames = await _videoRepository.GetVideoFrameCount(processedFrame.VideoId);
-            if (processedFrame.FrameSeq.Equals(totalVideoFrames))
+            if (processedFrame.FrameSeq.Equals(totalVideoFrames-1))
             {
                 await _videoRepository.UpdateVideoStatus(processedFrame.VideoId, Constants.VideoStatus.Processed);
             }

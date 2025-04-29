@@ -1,4 +1,6 @@
-﻿namespace DataViewerApi.Dto;
+﻿using DataViewerApi.Utils;
+
+namespace DataViewerApi.Dto;
 
 public class ResponseVideoDto
 {
@@ -9,6 +11,7 @@ public class ResponseVideoDto
     public DateOnly Date { get; set; }
     public string GpName { get; set; }
     public string Status { get; set; }
+    public bool ShowPlayer { get; set; }
 
     public ResponseVideoDto(int videoId, string videoName, int sessionId, string sessionName, DateOnly date, string gpName, string status)
     {
@@ -19,5 +22,6 @@ public class ResponseVideoDto
         Date = date;
         GpName = gpName;
         Status = status;
+        ShowPlayer = Constants.VideoStatus.Processed.Equals(status);
     }
 }
