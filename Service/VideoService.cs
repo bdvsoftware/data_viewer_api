@@ -90,7 +90,7 @@ public class VideoService : IVideoService
         foreach (var driverId in driverIds)
         {
             var driverNameData = await _driverRepository.GetDriverNameAndAbrreviation(driverId);
-            var key = "(" + driverNameData.DriverName + ") " + driverNameData.DriverName;
+            var key = "(" + driverNameData.DriverAbbreviation + ") " + driverNameData.DriverName;
             var onboardData = await _driverRepository.GetDriverOnboardData(driverId, videoId);
             var batteryData = await _driverRepository.GetDriverBatteryData(driverId, videoId);
             var driverData = new DriverVideoDto(onboardData, batteryData);
@@ -110,7 +110,7 @@ public class VideoService : IVideoService
         }
         
         var stream = new FileStream(video.Url, FileMode.Open, FileAccess.Read);
-        var fileName = $"{video.Name}.mp4";
+        var fileName = video.Name;
         
         return (stream, fileName);
     }
