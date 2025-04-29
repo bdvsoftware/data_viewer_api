@@ -2,6 +2,7 @@
 using DataViewerApi.Persistance.Repository;
 using DataViewerApi.Persistance.Entity;
 using DataViewerApi.Utils;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DataViewerApi.Service;
 
@@ -12,6 +13,7 @@ public interface IVideoService
     Task<IEnumerable<ResponseVideoDto>> GetVideos();
     Task<List<FrameToProcessDto>> StartVideoProcessing(int videoId);
     Task<Dictionary<string, DriverVideoDto>> GetVideoData(int videoId);
+    Task<(Stream Stream, string FileName)> GetVideoFile(int videoId);
 }
 
 public class VideoService : IVideoService
@@ -96,5 +98,20 @@ public class VideoService : IVideoService
             dict.TryAdd(key, driverData);
         }
         return dict;
+    }
+
+    public async Task<(Stream Stream, string FileName)> GetVideoFile(int videoId)
+    {
+        var video = await _videoRepository.GetVideo(videoId);
+
+        if (!File.Exists(video.Url))
+        {
+            throw new FileNotFoundException("Video not found");
+        }
+        
+        var stream = new FileStream(video.Url, FileMode.Open, FileAccess.Read);
+        var fileName = $"{video.Name}.mp4";
+        
+        return (stream, fileName);
     }
 }

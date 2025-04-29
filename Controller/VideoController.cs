@@ -60,4 +60,11 @@ public class VideoController : ControllerBase
         var data = await _videoService.GetVideoData(videoId);
         return Ok(data);
     }
+
+    [HttpGet("download/{videoId}")]
+    public async Task<IActionResult> DownloadVideo(int videoId)
+    {
+        var (stream, fileName) = await _videoService.GetVideoFile(videoId);
+        return File(stream, "video/mp4", fileName);
+    }
 }

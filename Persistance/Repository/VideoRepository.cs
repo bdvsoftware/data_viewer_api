@@ -14,6 +14,7 @@ public interface IVideoRepository
     Task<string> FindVideoPathById(int videoId);
     Task<int> GetVideoFrameCount(int videoId);
     Task UpdateVideoStatus(int videoId, string status);
+    Task<string> GetVideoPathById(int videoId);
 }
 
 public class VideoRepository : IVideoRepository
@@ -105,5 +106,13 @@ public class VideoRepository : IVideoRepository
         var video = await GetVideo(videoId);
         video.Status = status;
         await UpdateVideo(video);
+    }
+
+    public async Task<string> GetVideoPathById(int videoId)
+    {
+        return await _db.Videos
+            .Where(v => v.VideoId == videoId)
+            .Select(v => v.Url)
+            .FirstAsync();
     }
 }
