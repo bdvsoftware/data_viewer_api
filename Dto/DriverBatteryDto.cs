@@ -7,10 +7,10 @@ public class DriverBatteryDto
     public int Timestamp { get; set; }
     public int FrameId { get; set; }
     public int BatteryFrameId { get; set; }
-    public int Lap { get; set; }
+    public int? Lap { get; set; }
     public int Status { get; set; }
 
-    public DriverBatteryDto(string driverName, string driverAbbreviation, int timestamp, int frameId, int batteryFrameId, int lap, int status)
+    public DriverBatteryDto(string driverName, string driverAbbreviation, int timestamp, int frameId, int batteryFrameId, int? lap, int status)
     {
         DriverName = driverName;
         DriverAbbreviation = driverAbbreviation;

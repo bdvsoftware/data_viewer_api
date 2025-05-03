@@ -5,17 +5,20 @@ namespace DataViewerApi.Dto;
 
 public class OnboardHelmetDto
 {
-    [JsonPropertyName("driver")]
+    [JsonPropertyName("driver_name")]
     public string Driver { get; set; }
-    [JsonPropertyName("team")]
-    public string Team { get; set; }
+    [JsonPropertyName("driver_abbr")]
+    public string DriverAbbreviation { get; set; }
     [JsonPropertyName("cam")]
     public string Camera { get; set; }
+    [JsonPropertyName("lap")]
+    public int Lap { get; set; }
 
-    public OnboardHelmetDto(string driver, string team, string camera)
+    public OnboardHelmetDto(string driver, string driverAbbreviation, string camera, int lap)
     {
         Driver = driver;
-        Team = team;
+        DriverAbbreviation = driverAbbreviation;
         Camera = camera;
+        Lap = lap;
     }
 }

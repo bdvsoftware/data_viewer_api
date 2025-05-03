@@ -103,7 +103,7 @@ public class DriverRepository : IDriverRepository
                 frame.Timestamp,
                 frame.FrameId,
                 battery_frame.BatteryFrameId,
-                battery_frame.Lap,
+                frame.Lap,
                 battery_frame_driver.Status
             )).ToListAsync();
         return result;

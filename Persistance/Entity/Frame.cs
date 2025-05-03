@@ -12,12 +12,15 @@ public partial class Frame
     public int Seq { get; set; }
 
     public int Timestamp { get; set; }
+    
+    public int? Lap { get; set; }
 
-    public Frame(int videoId, int seq, int timestamp)
+    public Frame(int videoId, int seq, int timestamp, int? lap)
     {
         VideoId = videoId;
         Seq = seq;
         Timestamp = timestamp;
+        Lap = lap;
     }
 
     public virtual ICollection<DrivereyeFrame> DrivereyeFrames { get; set; } = new List<DrivereyeFrame>();

@@ -73,7 +73,8 @@ public class FrameService : IFrameService
                         new Frame(
                             video.VideoId,
                             second,
-                            second
+                            second, 
+                            null
                         ));
 
                     var meesage = new FrameToProcessDto(

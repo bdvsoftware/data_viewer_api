@@ -18,21 +18,24 @@ public class BatteryFrameService : IBatteryFrameService
     private readonly IBatteryFrameRepository _batteryFrameRepository;
     
     private readonly IBatteryFrameDriverRepository _batteryFrameDriverRepository;
-
-    public BatteryFrameService(IDriverRepository driverRepository, IBatteryFrameRepository batteryFrameRepository, IBatteryFrameDriverRepository batteryFrameDriverRepository)
+    
+    private readonly IFrameRepository _frameRepository;
+    
+    public BatteryFrameService(IDriverRepository driverRepository, IBatteryFrameRepository batteryFrameRepository, IBatteryFrameDriverRepository batteryFrameDriverRepository, IFrameRepository frameRepository)
     {
         _driverRepository = driverRepository;
         _batteryFrameRepository = batteryFrameRepository;
         _batteryFrameDriverRepository = batteryFrameDriverRepository;
+        _frameRepository = frameRepository;
     }
 
     public async Task ProcessBatteryFrame(int frameId, BatteryDriverDataDto batteryData)
     {
         var lap = batteryData.Lap;
         var batteryFrame = new BatteryFrame(
-            frameId,
-            lap
+            frameId
         );
+        await _frameRepository.UpdateFrameLap(frameId, lap);
         var savedBatteryFrame = await _batteryFrameRepository.AddBatteryFrame(batteryFrame);
         foreach (var key in batteryData.Battery.Keys)
         {

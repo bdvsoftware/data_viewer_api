@@ -7,6 +7,8 @@ public interface IFrameRepository
 {
     Task<Frame> AddFrame(Frame frame);
     Task<Frame> GetFrameById(int id);
+    Task UpdateFrameLap(int frameId, int lap);
+    Task UpdateFrame(Frame frame);
 }
 
 public class FrameRepository : IFrameRepository
@@ -29,5 +31,18 @@ public class FrameRepository : IFrameRepository
     public async Task<Frame> GetFrameById(int id)
     {
         return await _db.Frames.FirstAsync(f => f.FrameId == id);
+    }
+    
+    public async Task UpdateFrameLap(int frameId, int lap)
+    {
+        var frame = await GetFrameById(frameId);
+        frame.Lap = lap;
+        await UpdateFrame(frame);
+    }
+    
+    public async Task UpdateFrame(Frame frame)
+    {
+        _db.Frames.Update(frame);
+        await _db.SaveChangesAsync();
     }
 }

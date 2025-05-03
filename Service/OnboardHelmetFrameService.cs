@@ -35,7 +35,8 @@ public class OnboardHelmetFrameService : IOnboardHelmetFrameService
     public async Task ProcessOnboardHelmetFrame(int frameId, OnboardHelmetDto onboardHelmetData)
     {
         var camType = onboardHelmetData.Camera;
-        var driver = await _driverRepository.GetDriverByAbbreviation(onboardHelmetData.Driver);
+        var driver = await _driverRepository.GetDriverByAbbreviation(onboardHelmetData.DriverAbbreviation);
+        await _frameRepository.UpdateFrameLap(frameId, onboardHelmetData.Lap);
         if (driver != null)
         {
             if (Constants.CameraType.Onboard.Equals(camType))
