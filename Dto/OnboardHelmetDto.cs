@@ -12,9 +12,9 @@ public class OnboardHelmetDto
     [JsonPropertyName("cam")]
     public string Camera { get; set; }
     [JsonPropertyName("lap")]
-    public int Lap { get; set; }
+    public string Lap { get; set; }
 
-    public OnboardHelmetDto(string driver, string driverAbbreviation, string camera, int lap)
+    public OnboardHelmetDto(string driver, string driverAbbreviation, string camera, string lap)
     {
         Driver = driver;
         DriverAbbreviation = driverAbbreviation;

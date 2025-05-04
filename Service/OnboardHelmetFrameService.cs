@@ -12,7 +12,7 @@ public interface IOnboardHelmetFrameService
     public Task ProcessOnboardHelmetFrame(int frameId, OnboardHelmetDto onboardHelmetData);
 }
 
-public class OnboardHelmetFrameService : IOnboardHelmetFrameService
+public class OnboardHelmetFrameService : BaseService, IOnboardHelmetFrameService
 {
     private readonly IDrivereyeFrameRepository _drivereyeFrameRepository;
 
@@ -36,7 +36,8 @@ public class OnboardHelmetFrameService : IOnboardHelmetFrameService
     {
         var camType = onboardHelmetData.Camera;
         var driver = await _driverRepository.GetDriverByAbbreviation(onboardHelmetData.DriverAbbreviation);
-        await _frameRepository.UpdateFrameLap(frameId, onboardHelmetData.Lap);
+        var lap = ExtractLapNumber(onboardHelmetData.Lap);
+        await _frameRepository.UpdateFrameLap(frameId, lap);
         if (driver != null)
         {
             if (Constants.CameraType.Onboard.Equals(camType))

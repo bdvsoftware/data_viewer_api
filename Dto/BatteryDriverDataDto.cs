@@ -8,9 +8,9 @@ public class BatteryDriverDataDto
     public Dictionary<string, int> Battery { get; set; }
 
     [JsonPropertyName("lap")]
-    public int Lap { get; set; }
+    public string Lap { get; set; }
 
-    public BatteryDriverDataDto(Dictionary<string, int> battery, int lap)
+    public BatteryDriverDataDto(Dictionary<string, int> battery, string lap)
     {
         Battery = battery;
         Lap = lap;

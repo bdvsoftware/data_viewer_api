@@ -10,7 +10,7 @@ public interface IBatteryFrameService
     public Task ProcessBatteryFrame(int frameId, BatteryDriverDataDto batteryData);
 }
 
-public class BatteryFrameService : IBatteryFrameService
+public class BatteryFrameService : BaseService, IBatteryFrameService
 {
 
     private readonly IDriverRepository _driverRepository;
@@ -31,10 +31,10 @@ public class BatteryFrameService : IBatteryFrameService
 
     public async Task ProcessBatteryFrame(int frameId, BatteryDriverDataDto batteryData)
     {
-        var lap = batteryData.Lap;
         var batteryFrame = new BatteryFrame(
             frameId
         );
+        var lap = ExtractLapNumber(batteryData.Lap);
         await _frameRepository.UpdateFrameLap(frameId, lap);
         var savedBatteryFrame = await _batteryFrameRepository.AddBatteryFrame(batteryFrame);
         foreach (var key in batteryData.Battery.Keys)
