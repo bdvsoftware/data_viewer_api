@@ -18,6 +18,8 @@ public partial class Video
     public double  Duration { get; set; }
 
     public int TotalFrames { get; set; }
+    
+    public int ProcessedFrames { get; set; }
 
     public string Status { get; set; } = null!;
 
@@ -32,6 +34,7 @@ public partial class Video
         Url = url;
         Duration = duration;
         TotalFrames = totalFrames;
+        ProcessedFrames = 0;
         Status = status;
     }
 }

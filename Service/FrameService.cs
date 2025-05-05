@@ -28,14 +28,17 @@ public class FrameService : IFrameService
     private readonly IOnboardHelmetFrameService _onboardHelmetFrameService;
 
     private readonly IBatteryFrameService _batteryFrameService;
+    
+    private readonly ILogger<FrameService> _logger;
 
-    public FrameService(FrameKafkaProducer frameKafkaProducer, IFrameRepository frameRepository, IVideoRepository videoRepository, IOnboardHelmetFrameService onboardHelmetFrameService, IBatteryFrameService batteryFrameService)
+    public FrameService(FrameKafkaProducer frameKafkaProducer, IFrameRepository frameRepository, IVideoRepository videoRepository, IOnboardHelmetFrameService onboardHelmetFrameService, IBatteryFrameService batteryFrameService, ILogger<FrameService> logger)
     {
         _frameKafkaProducer = frameKafkaProducer;
         _frameRepository = frameRepository;
         _videoRepository = videoRepository;
         _onboardHelmetFrameService = onboardHelmetFrameService;
         _batteryFrameService = batteryFrameService;
+        _logger = logger;
     }
 
     public async Task<List<FrameToProcessDto>> ProduceFrames(Video video)
@@ -51,7 +54,7 @@ public class FrameService : IFrameService
         double totalFrames = capture.FrameCount;
         double durationSeconds = totalFrames / fps;
 
-        int frameCount = 1;
+        int frameCount = 0;
 
         for (int second = 0; second < (int)durationSeconds; second++)
         {
@@ -85,8 +88,6 @@ public class FrameService : IFrameService
                         base64Image
                     );
 
-                    await UpdateVideoFramesAndDuration(video.VideoId, frameCount, durationSeconds);
-
                     await _frameKafkaProducer.SendMessageAsync(meesage);
 
                     frames.Add(meesage);
@@ -96,6 +97,7 @@ public class FrameService : IFrameService
         }
 
         capture.Release();
+        await UpdateVideoFramesAndDuration(video.VideoId, frameCount, durationSeconds);
         await _videoRepository.UpdateVideoStatus(video.VideoId, Constants.VideoStatus.Processing);
         return frames;
     }
@@ -127,16 +129,25 @@ public class FrameService : IFrameService
                     processedFrame.BatteryDriverDataDto
                 );
             }
-            
-            var totalVideoFrames = await _videoRepository.GetVideoFrameCount(processedFrame.VideoId);
-            if (processedFrame.FrameSeq.Equals(totalVideoFrames-1))
-            {
-                await _videoRepository.UpdateVideoStatus(processedFrame.VideoId, Constants.VideoStatus.Processed);
-            }
+            _logger.LogInformation("Processed frame: "+processedFrame.FrameSeq);
         }
         catch (System.Exception ex)
         {
             Console.Write(ex.Message);
+        }
+        
+        try
+        {
+            var totalVideoFrames = await _videoRepository.GetVideoFrameCount(processedFrame.VideoId);
+            if (processedFrame.FrameSeq == totalVideoFrames - 1)
+            {
+                await _videoRepository.UpdateVideoStatus(processedFrame.VideoId, Constants.VideoStatus.Processed);
+                _logger.LogInformation($"Video PROCESSED: {processedFrame.VideoId}");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            _logger.LogError(ex, $"Failed to update video status for video {processedFrame.VideoId}");
         }
     }
 }
