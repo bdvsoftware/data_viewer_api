@@ -1,10 +1,12 @@
 ﻿using DataViewerApi.Persistance.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataViewerApi.Persistance.Repository;
 
 public interface IOnboardFrameRepository
 {
     public Task<OnboardFrame> AddOnboardFrame(OnboardFrame onboardFrame);
+    public Task DeleteAllOnboardFramesByVideoId(int videoId);
 }
 
 public class OnboardFrameRepository : IOnboardFrameRepository
@@ -22,5 +24,24 @@ public class OnboardFrameRepository : IOnboardFrameRepository
         await _db.SaveChangesAsync();
         return onboardFrame;
     }
-    
+
+    public async Task DeleteAllOnboardFramesByVideoId(int videoId)
+    {
+        var idsToDelete = await (
+            from of in _db.OnboardFrames
+            join f in _db.Frames on of.FrameId equals f.FrameId
+            join v in _db.Videos on f.VideoId equals v.VideoId
+            where v.VideoId == videoId
+            select of.OnboardFrameId
+            ).ToListAsync();
+        if (idsToDelete.Any())
+        {
+            foreach (var id in idsToDelete)
+            {
+                await _db.OnboardFrames
+                    .Where(bfd => bfd.OnboardFrameId.Equals(id))
+                    .ExecuteDeleteAsync();
+            }
+        }
+    }
 }

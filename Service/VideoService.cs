@@ -29,8 +29,12 @@ public class VideoService : IVideoService
     private readonly IDriverRepository _driverRepository;
     
     private readonly IFrameService _frameService;
+    
+    private readonly IBatteryFrameDriverRepository _batteryFrameDriverRepository;
+    
+    private readonly IOnboardFrameRepository _onboardFrameRepository;
 
-    public VideoService(IVideoRepository videoRepository, ISessionRepository sessionRepository, ISessionTypeRepository sessionTypeRepository, IGrandPrixRepository grandPrixRepository, IDriverRepository driverRepository, IFrameService frameService)
+    public VideoService(IVideoRepository videoRepository, ISessionRepository sessionRepository, ISessionTypeRepository sessionTypeRepository, IGrandPrixRepository grandPrixRepository, IDriverRepository driverRepository, IFrameService frameService, IBatteryFrameDriverRepository batteryFrameDriverRepository, IOnboardFrameRepository onboardFrameRepository)
     {
         _videoRepository = videoRepository;
         _sessionRepository = sessionRepository;
@@ -38,6 +42,8 @@ public class VideoService : IVideoService
         _grandPrixRepository = grandPrixRepository;
         _driverRepository = driverRepository;
         _frameService = frameService;
+        _batteryFrameDriverRepository = batteryFrameDriverRepository;
+        _onboardFrameRepository = onboardFrameRepository;
     }
 
     public async Task<Boolean> ExistsVideoByName(string videoName)
@@ -79,8 +85,11 @@ public class VideoService : IVideoService
     public async Task<List<FrameToProcessDto>> StartVideoProcessing(int videoId)
     {
         var video = await _videoRepository.GetVideo(videoId);
-        
-        //TO-DO borrar guardados si reprocesar
+
+        if (Constants.VideoStatus.Processed.Equals(video.Status))
+        {
+            await DeleteExistingProcessedFrames(video.VideoId);
+        }
         
         return await _frameService.ProduceFrames(video);
     }
@@ -115,5 +124,11 @@ public class VideoService : IVideoService
         var fileName = video.Name;
         
         return (stream, fileName);
+    }
+
+    private async Task DeleteExistingProcessedFrames(int videoId)
+    {
+        await _batteryFrameDriverRepository.DeleteAllBatteryFrameDriversByVideoId(videoId);
+        await _onboardFrameRepository.DeleteAllOnboardFramesByVideoId(videoId);
     }
 }
