@@ -86,7 +86,7 @@ public class VideoService : IVideoService
     {
         var video = await _videoRepository.GetVideo(videoId);
 
-        if (Constants.VideoStatus.Processed.Equals(video.Status))
+        if (Constants.VideoStatus.Processed.Equals(video.Status) || Constants.VideoStatus.Processing.Equals(video.Status))
         {
             await DeleteExistingProcessedFrames(video.VideoId);
         }
@@ -104,7 +104,9 @@ public class VideoService : IVideoService
             var key = "(" + driverNameData.DriverAbbreviation + ") " + driverNameData.DriverName;
             var onboardData = await _driverRepository.GetDriverOnboardData(driverId, videoId);
             var batteryData = await _driverRepository.GetDriverBatteryData(driverId, videoId);
-            var driverData = new DriverVideoDto(onboardData, batteryData);
+            var rangeTimeBattery = GroupBatteryDataByTimestampRange(batteryData);
+            var rangeTimeOnboard = GroupOnboardDataByTimestampRange(onboardData);
+            var driverData = new DriverVideoDto(rangeTimeOnboard, rangeTimeBattery);
             
             dict.TryAdd(key, driverData);
         }
@@ -130,5 +132,101 @@ public class VideoService : IVideoService
     {
         await _batteryFrameDriverRepository.DeleteAllBatteryFrameDriversByVideoId(videoId);
         await _onboardFrameRepository.DeleteAllOnboardFramesByVideoId(videoId);
+    }
+    
+    private IEnumerable<DriverBatteryRangeDto> GroupBatteryDataByTimestampRange(IEnumerable<DriverBatteryDto> batteryData)
+    {
+        var sortedData = batteryData.OrderBy(b => b.Timestamp).ToList();
+        var result = new List<DriverBatteryRangeDto>();
+
+        if (!sortedData.Any()) return result;
+
+        int start = sortedData[0].Timestamp;
+        int end = start;
+
+        var first = sortedData[0];
+
+        for (int i = 1; i < sortedData.Count; i++)
+        {
+            var current = sortedData[i];
+
+            if (current.Timestamp == end + 1)
+            {
+                end = current.Timestamp;
+            }
+            else
+            {
+                result.Add(CreateDriverBatteryRangeDto(first, start, end));
+                first = current;
+                start = end = current.Timestamp;
+            }
+        }
+
+        result.Add(CreateDriverBatteryRangeDto(first, start, end));
+
+        return result;
+    }
+    
+    private DriverBatteryRangeDto CreateDriverBatteryRangeDto(DriverBatteryDto dto, int start, int end)
+    {
+        return new DriverBatteryRangeDto
+        (
+            dto.DriverName,
+            dto.DriverAbbreviation,
+            $"{FormatSecondsToTime(start)} - {FormatSecondsToTime(end)}",
+            dto.FrameId,
+            dto.BatteryFrameId,
+            dto.Lap,
+            dto.Status);
+    }
+    
+    public List<DriverOnboardRangeDto> GroupOnboardDataByTimestampRange(IEnumerable<DriverOnboardDto> onboardData)
+    {
+        var sortedData = onboardData.OrderBy(d => d.Timestamp).ToList();
+        var result = new List<DriverOnboardRangeDto>();
+
+        if (!sortedData.Any()) return result;
+
+        int start = sortedData[0].Timestamp;
+        int end = start;
+
+        var first = sortedData[0];
+
+        for (int i = 1; i < sortedData.Count; i++)
+        {
+            var current = sortedData[i];
+
+            if (current.Timestamp == end + 1)
+            {
+                end = current.Timestamp;
+            }
+            else
+            {
+                result.Add(CreateDriverOnboardRangeDto(first, start, end));
+                first = current;
+                start = end = current.Timestamp;
+            }
+        }
+
+        result.Add(CreateDriverOnboardRangeDto(first, start, end));
+
+        return result;
+    }
+    
+    private DriverOnboardRangeDto CreateDriverOnboardRangeDto(DriverOnboardDto dto, int start, int end)
+    {
+        return new DriverOnboardRangeDto
+        (
+            dto.DriverName,
+            dto.DriverAbbreviation,
+            dto.TeamName,
+            dto.OnboardFrameId,
+            $"{FormatSecondsToTime(start)} - {FormatSecondsToTime(end)}");
+    }
+    
+    private string FormatSecondsToTime(int totalSeconds)
+    {
+        var time = TimeSpan.FromSeconds(totalSeconds);
+        return time.ToString(@"hh\:mm\:ss");
     }
 }

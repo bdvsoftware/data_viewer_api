@@ -65,7 +65,7 @@ public class FrameProcessedKafkaConsumer : BackgroundService
             }
             finally
             {
-                _consumer.Close();
+                _consumer.Close(); 
             }
         }, stoppingToken);
     }

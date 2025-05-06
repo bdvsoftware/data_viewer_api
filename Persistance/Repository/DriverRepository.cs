@@ -96,7 +96,7 @@ public class DriverRepository : IDriverRepository
             join frame in _db.Frames on battery_frame.FrameId equals frame.FrameId
             join video in _db.Videos on frame.VideoId equals video.VideoId
             join team in _db.Teams on driver.TeamId equals team.TeamId
-            where driver.DriverId == driverId && video.VideoId == videoId
+            where driver.DriverId == driverId && video.VideoId == videoId && battery_frame_driver.Status != -1
             select new DriverBatteryDto(
                 driver.Name,
                 driver.Abbreviation,
