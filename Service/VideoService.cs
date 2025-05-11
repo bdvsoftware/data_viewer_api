@@ -1,4 +1,6 @@
 ﻿using DataViewerApi.Dto;
+using DataViewerApi.Kafka.Consumer;
+using DataViewerApi.Kafka.Producer;
 using DataViewerApi.Persistance.Repository;
 using DataViewerApi.Persistance.Entity;
 using DataViewerApi.Utils;
@@ -11,9 +13,10 @@ public interface IVideoService
     Task<Boolean> ExistsVideoByName(string videoName);
     Task<UploadedVideoDto> UploadVideo(RequestUploadVideoDto request);
     Task<IEnumerable<ResponseVideoDto>> GetVideos();
-    Task<List<FrameToProcessDto>> StartVideoProcessing(int videoId);
+    Task StartVideoProcessing(int videoId);
     Task<Dictionary<string, DriverVideoDto>> GetVideoData(int videoId);
     Task<(Stream Stream, string FileName)> GetVideoFile(int videoId);
+    Task<string> GetVideoPath(int videoId);
 }
 
 public class VideoService : IVideoService
@@ -34,7 +37,9 @@ public class VideoService : IVideoService
     
     private readonly IOnboardFrameRepository _onboardFrameRepository;
 
-    public VideoService(IVideoRepository videoRepository, ISessionRepository sessionRepository, ISessionTypeRepository sessionTypeRepository, IGrandPrixRepository grandPrixRepository, IDriverRepository driverRepository, IFrameService frameService, IBatteryFrameDriverRepository batteryFrameDriverRepository, IOnboardFrameRepository onboardFrameRepository)
+    private readonly VideoToProcessKafkaProducer _videoToProcessKafkaProducer;
+
+    public VideoService(IVideoRepository videoRepository, ISessionRepository sessionRepository, ISessionTypeRepository sessionTypeRepository, IGrandPrixRepository grandPrixRepository, IDriverRepository driverRepository, IFrameService frameService, IBatteryFrameDriverRepository batteryFrameDriverRepository, IOnboardFrameRepository onboardFrameRepository, VideoToProcessKafkaProducer videoToProcessKafkaProducer)
     {
         _videoRepository = videoRepository;
         _sessionRepository = sessionRepository;
@@ -44,6 +49,7 @@ public class VideoService : IVideoService
         _frameService = frameService;
         _batteryFrameDriverRepository = batteryFrameDriverRepository;
         _onboardFrameRepository = onboardFrameRepository;
+        _videoToProcessKafkaProducer = videoToProcessKafkaProducer;
     }
 
     public async Task<Boolean> ExistsVideoByName(string videoName)
@@ -82,7 +88,7 @@ public class VideoService : IVideoService
         return await _videoRepository.GetAllVideos();
     }
 
-    public async Task<List<FrameToProcessDto>> StartVideoProcessing(int videoId)
+    public async Task StartVideoProcessing(int videoId)
     {
         var video = await _videoRepository.GetVideo(videoId);
 
@@ -90,8 +96,12 @@ public class VideoService : IVideoService
         {
             await DeleteExistingProcessedFrames(video.VideoId);
         }
+
+        var videoToProcess = new VideoToProcessDto(video.VideoId, video.Url);
+
+        await _videoToProcessKafkaProducer.SendMessageAsync(videoToProcess);
         
-        return await _frameService.ProduceFrames(video);
+        await _videoRepository.UpdateVideoStatus(videoId, Constants.VideoStatus.Processing);
     }
     
     public async Task<Dictionary<string, DriverVideoDto>> GetVideoData(int videoId)
@@ -228,5 +238,10 @@ public class VideoService : IVideoService
     {
         var time = TimeSpan.FromSeconds(totalSeconds);
         return time.ToString(@"hh\:mm\:ss");
+    }
+
+    public async Task<string> GetVideoPath(int videoId)
+    {
+        return await _videoRepository.GetVideoPathById(videoId);
     }
 }

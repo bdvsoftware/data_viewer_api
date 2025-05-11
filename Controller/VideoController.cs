@@ -48,10 +48,9 @@ public class VideoController : ControllerBase
     }
 
     [HttpPost("process/{videoId}")]
-    public async Task<ActionResult<ResponseVideoDto>> ProcessVideo(int videoId)
+    public async Task ProcessVideo(int videoId)
     {
-        var frames = await _videoService.StartVideoProcessing(videoId);
-        return Ok(frames);
+        await _videoService.StartVideoProcessing(videoId);
     }
 
     [HttpGet("data/{videoId}")]
@@ -66,5 +65,12 @@ public class VideoController : ControllerBase
     {
         var (stream, fileName) = await _videoService.GetVideoFile(videoId);
         return File(stream, "video/mp4", fileName);
+    }
+
+    [HttpGet("path/{videoId}")]
+    public async Task<IActionResult> GetVideoPath(int videoId)
+    {
+        var path = await _videoService.GetVideoPath(videoId);
+        return Ok(path);
     }
 }

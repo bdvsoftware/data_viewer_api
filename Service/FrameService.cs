@@ -13,7 +13,7 @@ namespace DataViewerApi.Service;
 
 public interface IFrameService
 {
-    Task<List<FrameToProcessDto>> ProduceFrames(Video video);
+    Task ProduceFrames(int videoId, string videoUrl);
     Task ReceiveProcessedFrame(ProcessedFrameDto processedFrame);
 }
 
@@ -41,11 +41,10 @@ public class FrameService : IFrameService
         _logger = logger;
     }
 
-    public async Task<List<FrameToProcessDto>> ProduceFrames(Video video)
+    public async Task ProduceFrames(int videoId, string videoUrl)
     {
-        var frames = new List<FrameToProcessDto>();
 
-        var capture = new VideoCapture(video.Url);
+        var capture = new VideoCapture(videoUrl);
 
         if (!capture.IsOpened())
             throw new System.Exception("Error accessing video");
@@ -74,14 +73,14 @@ public class FrameService : IFrameService
 
                     var savedFrame = await _frameRepository.AddFrame(
                         new Frame(
-                            video.VideoId,
+                            videoId,
                             second,
                             second, 
                             null
                         ));
 
                     var meesage = new FrameToProcessDto(
-                        video.VideoId,
+                        videoId,
                         savedFrame.FrameId,
                         savedFrame.Seq,
                         savedFrame.Timestamp,
@@ -90,16 +89,14 @@ public class FrameService : IFrameService
 
                     await _frameKafkaProducer.SendMessageAsync(meesage);
 
-                    frames.Add(meesage);
+                    _logger.LogInformation($"Seq: {savedFrame.Seq}, Frame: {savedFrame.FrameId}");
                     frameCount++;
                 }
             }
         }
 
         capture.Release();
-        await UpdateVideoFramesAndDuration(video.VideoId, frameCount, durationSeconds);
-        await _videoRepository.UpdateVideoStatus(video.VideoId, Constants.VideoStatus.Processing);
-        return frames;
+        await UpdateVideoFramesAndDuration(videoId, frameCount, durationSeconds);
     }
 
     private async Task UpdateVideoFramesAndDuration(int videoId, double totalFrames, double durationSeconds)

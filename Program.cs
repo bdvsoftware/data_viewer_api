@@ -1,5 +1,6 @@
 using System.Text.Json;
 using DataViewerApi.Kafka.Consumer;
+using DataViewerApi.Kafka.Producer;
 using DataViewerApi.Persistance.Repository;
 using DataViewerApi.Persistance.Entity;
 using DataViewerApi.Service;
@@ -21,11 +22,12 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 1_000_000_000; // 1 GB o lo que necesites
+    options.MultipartBodyLengthLimit = 10_000_000_000;
 });
 
 builder.WebHost.ConfigureKestrel(options =>
 {
+    options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(10);
     options.Limits.MaxRequestBodySize = long.MaxValue;
 });
 
@@ -59,7 +61,9 @@ builder.Services.AddScoped<IOnboardFrameRepository, OnboardFrameRepository>();
 builder.Services.AddScoped<IDriverRepository, DriverRepository>();
 
 builder.Services.AddScoped<FrameKafkaProducer>();
+builder.Services.AddScoped<VideoToProcessKafkaProducer>();
 builder.Services.AddHostedService<FrameProcessedKafkaConsumer>();
+builder.Services.AddHostedService<StartVideoProcessingKafkaConsumer>();
 var app = builder.Build();
 
 app.UseHttpsRedirection();

@@ -7,7 +7,7 @@ public class DriverBatteryRangeDto
     public int FrameId { get; set; }
     public int BatteryFrameId { get; set; }
     public int? Lap { get; set; }
-    public int Status { get; set; }
+    public String Status { get; set; }
     public string TimeRange { get; set; }
 
     public DriverBatteryRangeDto(string driverName, string driverAbbreviation, string timeRange, int frameId, int batteryFrameId, int? lap, int status)
@@ -17,7 +17,7 @@ public class DriverBatteryRangeDto
         FrameId = frameId;
         BatteryFrameId = batteryFrameId;
         Lap = lap;
-        Status = status;
+        Status = $"{status}%";
         TimeRange = timeRange;
     }
 }
