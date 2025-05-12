@@ -47,10 +47,10 @@ public class VideoController : ControllerBase
         return Ok(videos);
     }
 
-    [HttpPost("process/{videoId}")]
-    public async Task ProcessVideo(int videoId)
+    [HttpPost("process/{videoId}/{threshold}")]
+    public async Task ProcessVideo(int videoId, int threshold)
     {
-        await _videoService.StartVideoProcessing(videoId);
+        await _videoService.StartVideoProcessing(videoId, threshold);
     }
 
     [HttpGet("data/{videoId}")]

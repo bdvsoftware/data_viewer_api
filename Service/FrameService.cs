@@ -13,7 +13,7 @@ namespace DataViewerApi.Service;
 
 public interface IFrameService
 {
-    Task ProduceFrames(int videoId, string videoUrl);
+    Task ProduceFrames(int videoId, string videoUrl, int threshold);
     Task ReceiveProcessedFrame(ProcessedFrameDto processedFrame);
 }
 
@@ -41,7 +41,7 @@ public class FrameService : IFrameService
         _logger = logger;
     }
 
-    public async Task ProduceFrames(int videoId, string videoUrl)
+    public async Task ProduceFrames(int videoId, string videoUrl, int threshold)
     {
 
         var capture = new VideoCapture(videoUrl);
@@ -55,7 +55,7 @@ public class FrameService : IFrameService
 
         int frameCount = 0;
 
-        for (int second = 0; second < (int)durationSeconds; second++)
+        for (int second = 0; second < (int)durationSeconds; second+=threshold)
         {
             int targetFrame = (int)(second * fps);
             capture.Set(VideoCaptureProperties.PosFrames, targetFrame);
@@ -74,7 +74,7 @@ public class FrameService : IFrameService
                     var savedFrame = await _frameRepository.AddFrame(
                         new Frame(
                             videoId,
-                            second,
+                            frameCount,
                             second, 
                             null
                         ));

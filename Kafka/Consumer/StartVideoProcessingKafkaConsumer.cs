@@ -26,7 +26,8 @@ public class StartVideoProcessingKafkaConsumer : BackgroundService
         {
             BootstrapServers = _bootstrapServers,
             GroupId = _groupId,
-            AutoOffsetReset = AutoOffsetReset.Earliest
+            AutoOffsetReset = AutoOffsetReset.Earliest,
+            MaxPollIntervalMs = 1200000
         };
 
         _consumer = new ConsumerBuilder<Ignore, string>(_config).Build();
@@ -48,7 +49,7 @@ public class StartVideoProcessingKafkaConsumer : BackgroundService
                         using (var scope = _serviceProvider.CreateScope())
                         {
                             var frameService = scope.ServiceProvider.GetRequiredService<IFrameService>();
-                            await frameService.ProduceFrames(videoToProcess.VideoId, videoToProcess.VideoUrl);
+                            await frameService.ProduceFrames(videoToProcess.VideoId, videoToProcess.VideoUrl, videoToProcess.Threshold);
                         }
                     }
                     _logger.LogInformation($"Message received: {consumeResult.Message.Value}");

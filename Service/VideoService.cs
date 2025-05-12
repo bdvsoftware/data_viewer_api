@@ -13,7 +13,7 @@ public interface IVideoService
     Task<Boolean> ExistsVideoByName(string videoName);
     Task<UploadedVideoDto> UploadVideo(RequestUploadVideoDto request);
     Task<IEnumerable<ResponseVideoDto>> GetVideos();
-    Task StartVideoProcessing(int videoId);
+    Task StartVideoProcessing(int videoId, int threshold);
     Task<Dictionary<string, DriverVideoDto>> GetVideoData(int videoId);
     Task<(Stream Stream, string FileName)> GetVideoFile(int videoId);
     Task<string> GetVideoPath(int videoId);
@@ -88,7 +88,7 @@ public class VideoService : IVideoService
         return await _videoRepository.GetAllVideos();
     }
 
-    public async Task StartVideoProcessing(int videoId)
+    public async Task StartVideoProcessing(int videoId, int threshold)
     {
         var video = await _videoRepository.GetVideo(videoId);
 
@@ -97,7 +97,7 @@ public class VideoService : IVideoService
             await DeleteExistingProcessedFrames(video.VideoId);
         }
 
-        var videoToProcess = new VideoToProcessDto(video.VideoId, video.Url);
+        var videoToProcess = new VideoToProcessDto(video.VideoId, video.Url, threshold);
 
         await _videoToProcessKafkaProducer.SendMessageAsync(videoToProcess);
         
