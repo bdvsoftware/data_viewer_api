@@ -115,7 +115,7 @@ public class VideoService : IVideoService
             var onboardData = await _driverRepository.GetDriverOnboardData(driverId, videoId);
             var batteryData = await _driverRepository.GetDriverBatteryData(driverId, videoId);
             var rangeTimeBattery = GroupBatteryDataByTimestampRange(batteryData);
-            var rangeTimeOnboard = GroupOnboardDataByTimestampRange(onboardData);
+            var rangeTimeOnboard = await GroupOnboardDataByTimestampRange(onboardData, videoId);
             var driverData = new DriverVideoDto(rangeTimeOnboard, rangeTimeBattery);
             
             dict.TryAdd(key, driverData);
@@ -190,11 +190,11 @@ public class VideoService : IVideoService
             dto.Status);
     }
     
-    public List<DriverOnboardRangeDto> GroupOnboardDataByTimestampRange(IEnumerable<DriverOnboardDto> onboardData)
+    private async Task<List<DriverOnboardRangeDto>> GroupOnboardDataByTimestampRange(IEnumerable<DriverOnboardDto> onboardData, int videoId)
     {
         var sortedData = onboardData.OrderBy(d => d.Timestamp).ToList();
         var result = new List<DriverOnboardRangeDto>();
-
+        var frameRate = await _videoRepository.GetVideoFrameRateById(videoId);
         if (!sortedData.Any()) return result;
 
         int start = sortedData[0].Timestamp;
@@ -206,7 +206,7 @@ public class VideoService : IVideoService
         {
             var current = sortedData[i];
 
-            if (current.Timestamp == end + 1)
+            if (current.Timestamp == end + frameRate)
             {
                 end = current.Timestamp;
             }

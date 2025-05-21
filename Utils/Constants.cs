@@ -18,4 +18,6 @@ public static class Constants
         public static readonly string Failed = "FAILED";
         public static readonly string Processed = "PROCESSED";
     }
+
+    public static string NOT_DETECTED_LAP = "XX/XX";
 }

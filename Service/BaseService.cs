@@ -1,4 +1,6 @@
-﻿namespace DataViewerApi.Service;
+﻿using DataViewerApi.Utils;
+
+namespace DataViewerApi.Service;
 
 public abstract class BaseService
 {
@@ -7,9 +9,14 @@ public abstract class BaseService
         if (string.IsNullOrWhiteSpace(lap))
             throw new ArgumentException("LAP NULL");
 
+        if (Constants.NOT_DETECTED_LAP.Equals(lap))
+        {
+            return 0;
+        }
+
         var parts = lap.Split('/');
         if (parts.Length != 2 || !int.TryParse(parts[0], out int lapNumber))
-            throw new FormatException("Lap format not valid. Must be 'x/xx' or 'xx/xx'.");
+            throw new FormatException("Lap format not valid.");
 
         return lapNumber;
     }

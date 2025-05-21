@@ -22,6 +22,8 @@ public partial class Video
     public int ProcessedFrames { get; set; }
 
     public string Status { get; set; } = null!;
+    
+    public int FrameRate { get; set; }
 
     public virtual ICollection<Frame> Frames { get; set; } = new List<Frame>();
 

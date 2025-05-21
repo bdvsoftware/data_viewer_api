@@ -96,14 +96,15 @@ public class FrameService : IFrameService
         }
 
         capture.Release();
-        await UpdateVideoFramesAndDuration(videoId, frameCount, durationSeconds);
+        await UpdateVideoData(videoId, frameCount, durationSeconds, threshold);
     }
 
-    private async Task UpdateVideoFramesAndDuration(int videoId, double totalFrames, double durationSeconds)
+    private async Task UpdateVideoData(int videoId, double totalFrames, double durationSeconds, int frameRate)
     {
         var video = await _videoRepository.GetVideo(videoId);
         video.TotalFrames = IntegerType.FromObject(totalFrames);
         video.Duration = IntegerType.FromObject(durationSeconds);
+        video.FrameRate = frameRate;
         await _videoRepository.UpdateVideo(video);
     }
 
