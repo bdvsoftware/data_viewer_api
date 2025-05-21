@@ -42,7 +42,7 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<BatteryFrameDriver> BatteryFrameDrivers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=localhost:5432;Database=data_viewer;Username=postgres;Password=root");
+        => optionsBuilder.UseNpgsql("Host=postgres-container:5432;Database=data_viewer;Username=postgres;Password=root");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

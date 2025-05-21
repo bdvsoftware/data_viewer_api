@@ -4,7 +4,7 @@ using DataViewerApi.Dto;
 
 public class FrameKafkaProducer
 {
-    private readonly string _bootstrapServers = "localhost:19092";
+    private readonly string _bootstrapServers = "kafka:9092";
     private readonly string _topic = "frame.to.process";
 
     public async Task SendMessageAsync(FrameToProcessDto frame)

@@ -9,7 +9,7 @@ namespace DataViewerApi.Kafka.Consumer;
 public class FrameProcessedKafkaConsumer : BackgroundService
 {
     private readonly ILogger<FrameProcessedKafkaConsumer> _logger;
-    private readonly string _bootstrapServers = "localhost:19092";
+    private readonly string _bootstrapServers = "kafka:9092";
     private readonly string _topic = "frame.processed";
     private readonly string _groupId = "videoprocessor-consumer";
     private readonly ConsumerConfig _config;

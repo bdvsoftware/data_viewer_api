@@ -17,4 +17,13 @@
         <PackageReference Include="System.Drawing.Common" Version="9.0.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="out\web.config" />
+      <_ContentIncludedByDefault Remove="out\appsettings.Development.json" />
+      <_ContentIncludedByDefault Remove="out\appsettings.json" />
+      <_ContentIncludedByDefault Remove="out\DataViewerApi.deps.json" />
+      <_ContentIncludedByDefault Remove="out\DataViewerApi.runtimeconfig.json" />
+      <_ContentIncludedByDefault Remove="out\DataViewerApi.staticwebassets.endpoints.json" />
+    </ItemGroup>
+
 </Project>

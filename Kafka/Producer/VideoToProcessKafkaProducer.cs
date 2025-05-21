@@ -6,7 +6,7 @@ namespace DataViewerApi.Kafka.Producer;
 
 public class VideoToProcessKafkaProducer
 {
-    private readonly string _bootstrapServers = "localhost:19092";
+    private readonly string _bootstrapServers = "kafka:9092";
     private readonly string _topic = "video.to.process";
     
     public async Task SendMessageAsync(VideoToProcessDto frame)
