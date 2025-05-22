@@ -22,16 +22,18 @@ public class FrameService : IFrameService
     private readonly FrameKafkaProducer _frameKafkaProducer;
 
     private readonly IFrameRepository _frameRepository;
-    
+
     private readonly IVideoRepository _videoRepository;
 
     private readonly IOnboardHelmetFrameService _onboardHelmetFrameService;
 
     private readonly IBatteryFrameService _batteryFrameService;
-    
+
     private readonly ILogger<FrameService> _logger;
 
-    public FrameService(FrameKafkaProducer frameKafkaProducer, IFrameRepository frameRepository, IVideoRepository videoRepository, IOnboardHelmetFrameService onboardHelmetFrameService, IBatteryFrameService batteryFrameService, ILogger<FrameService> logger)
+    public FrameService(FrameKafkaProducer frameKafkaProducer, IFrameRepository frameRepository,
+        IVideoRepository videoRepository, IOnboardHelmetFrameService onboardHelmetFrameService,
+        IBatteryFrameService batteryFrameService, ILogger<FrameService> logger)
     {
         _frameKafkaProducer = frameKafkaProducer;
         _frameRepository = frameRepository;
@@ -43,7 +45,6 @@ public class FrameService : IFrameService
 
     public async Task ProduceFrames(int videoId, string videoUrl, int threshold)
     {
-
         var capture = new VideoCapture(videoUrl);
 
         if (!capture.IsOpened())
@@ -55,7 +56,7 @@ public class FrameService : IFrameService
 
         int frameCount = 0;
 
-        for (int second = 0; second < (int)durationSeconds; second+=threshold)
+        for (int second = 0; second < (int)durationSeconds; second += threshold)
         {
             int targetFrame = (int)(second * fps);
             capture.Set(VideoCaptureProperties.PosFrames, targetFrame);
@@ -65,33 +66,29 @@ public class FrameService : IFrameService
                 if (!capture.Read(frame) || frame.Empty())
                     continue;
 
-                using (Bitmap bmp = BitmapConverter.ToBitmap(frame))
-                using (var ms = new MemoryStream())
-                {
-                    bmp.Save(ms, ImageFormat.Jpeg);
-                    string base64Image = Convert.ToBase64String(ms.ToArray());
+                byte[] imageBytes = frame.ToBytes(".jpg");
+                string base64Image = Convert.ToBase64String(imageBytes);
 
-                    var savedFrame = await _frameRepository.AddFrame(
-                        new Frame(
-                            videoId,
-                            frameCount,
-                            second, 
-                            null
-                        ));
-
-                    var meesage = new FrameToProcessDto(
+                var savedFrame = await _frameRepository.AddFrame(
+                    new Frame(
                         videoId,
-                        savedFrame.FrameId,
-                        savedFrame.Seq,
-                        savedFrame.Timestamp,
-                        base64Image
-                    );
+                        frameCount,
+                        second,
+                        null
+                    ));
 
-                    await _frameKafkaProducer.SendMessageAsync(meesage);
+                var meesage = new FrameToProcessDto(
+                    videoId,
+                    savedFrame.FrameId,
+                    savedFrame.Seq,
+                    savedFrame.Timestamp,
+                    base64Image
+                );
 
-                    _logger.LogInformation($"Seq: {savedFrame.Seq}, Frame: {savedFrame.FrameId}");
-                    frameCount++;
-                }
+                await _frameKafkaProducer.SendMessageAsync(meesage);
+
+                _logger.LogInformation($"Seq: {savedFrame.Seq}, Frame: {savedFrame.FrameId}");
+                frameCount++;
             }
         }
 
@@ -127,13 +124,14 @@ public class FrameService : IFrameService
                     processedFrame.BatteryDriverDataDto
                 );
             }
-            _logger.LogInformation("Processed frame: "+processedFrame.FrameSeq);
+
+            _logger.LogInformation("Processed frame: " + processedFrame.FrameSeq);
         }
         catch (System.Exception ex)
         {
             Console.Write(ex.Message);
         }
-        
+
         try
         {
             var totalVideoFrames = await _videoRepository.GetVideoFrameCount(processedFrame.VideoId);

@@ -64,6 +64,9 @@ builder.Services.AddScoped<FrameKafkaProducer>();
 builder.Services.AddScoped<VideoToProcessKafkaProducer>();
 builder.Services.AddHostedService<FrameProcessedKafkaConsumer>();
 builder.Services.AddHostedService<StartVideoProcessingKafkaConsumer>();
+
+builder.WebHost.UseUrls("http://0.0.0.0:5000");
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
