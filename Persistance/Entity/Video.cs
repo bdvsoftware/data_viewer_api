@@ -24,12 +24,14 @@ public partial class Video
     public string Status { get; set; } = null!;
     
     public int FrameRate { get; set; }
+    
+    public string OriginalPath { get; set; }
 
     public virtual ICollection<Frame> Frames { get; set; } = new List<Frame>();
 
     public virtual Session Session { get; set; } = null!;
 
-    public Video(int sessionId, string name, string url, double duration, int totalFrames, string status)
+    public Video(int sessionId, string name, string url, double duration, int totalFrames, string status, string originalPath)
     {
         SessionId = sessionId;
         Name = name;
@@ -38,5 +40,6 @@ public partial class Video
         TotalFrames = totalFrames;
         ProcessedFrames = 0;
         Status = status;
+        OriginalPath = originalPath;
     }
 }

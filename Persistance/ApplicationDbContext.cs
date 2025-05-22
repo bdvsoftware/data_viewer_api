@@ -301,6 +301,7 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Url).HasColumnName("url");
             entity.Property(e => e.ProcessedFrames).HasColumnName("processed_frames");
             entity.Property(e => e.FrameRate).HasColumnName("frame_rate");
+            entity.Property(e => e.OriginalPath).HasColumnName("original_path");
 
             entity.HasOne(d => d.Session).WithOne(p => p.Video)
                 .HasForeignKey<Video>(d => d.SessionId)
