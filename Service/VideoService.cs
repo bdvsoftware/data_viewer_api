@@ -62,6 +62,8 @@ public class VideoService : IVideoService
     {
         var filePath = Path.Combine(Constants.VideoDirectory, request.File.FileName);
 
+        var originalFilePath = request.Path;
+
         var gp = await _grandPrixRepository.GetByName(request.GrandPrixName);
 
         var sessionType = await _sessionTypeRepository.GetByName(request.SessionName);
@@ -71,7 +73,7 @@ public class VideoService : IVideoService
         );
 
         var video = await _videoRepository.AddVideo(
-            new Video(session.SessionId, request.File.FileName, filePath, 0, 0, "UPLOADED")
+            new Video(session.SessionId, request.File.FileName, filePath, 0, 0, "UPLOADED", originalFilePath)
         );
         
         using (var stream = new FileStream(filePath, FileMode.Create))

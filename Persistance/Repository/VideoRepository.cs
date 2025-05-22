@@ -113,7 +113,7 @@ public class VideoRepository : IVideoRepository
     {
         return await _db.Videos
             .Where(v => v.VideoId == videoId)
-            .Select(v => v.Url)
+            .Select(v => v.OriginalPath)
             .FirstAsync();
     }
 
