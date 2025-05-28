@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DataViewerApi.Persistance.Entity;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataViewerApi.Persistance.Entity;
+namespace DataViewerApi.Persistance;
 
 public partial class ApplicationDbContext : DbContext
 {
@@ -42,7 +41,7 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<BatteryFrameDriver> BatteryFrameDrivers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=localhost:5432;Database=data_viewer;Username=postgres;Password=root");
+        => optionsBuilder.UseNpgsql("Host=localhost:33066;Database=data_viewer;Username=postgres;Password=root");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using DataViewerApi.Kafka.Consumer;
 using DataViewerApi.Kafka.Producer;
+using DataViewerApi.Persistance;
 using DataViewerApi.Persistance.Repository;
 using DataViewerApi.Persistance.Entity;
 using DataViewerApi.Service;
