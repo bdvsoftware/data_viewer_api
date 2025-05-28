@@ -39,6 +39,8 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<BatteryFrame> BatteryFrames { get; set; }
     
     public virtual DbSet<BatteryFrameDriver> BatteryFrameDrivers { get; set; }
+    
+    public virtual DbSet<TokenConsumption> TokenConsumptions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseNpgsql("Host=localhost:33066;Database=data_viewer;Username=postgres;Password=root");
@@ -321,6 +323,18 @@ public partial class ApplicationDbContext : DbContext
                 .HasForeignKey(d => d.FrameId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("wideshot_frame_frame_id_fkey");
+        });
+        
+        modelBuilder.Entity<TokenConsumption>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("id");
+
+            entity.ToTable("token_consumption");
+
+            entity.Property(e => e.FrameId).HasColumnName("frame_id");
+            entity.Property(e => e.ResponseStatus).HasColumnName("response_status");
+            entity.Property(e => e.PromptTokens).HasColumnName("prompt_tokens");
+            entity.Property(e => e.CompletionTokens).HasColumnName("completion_tokens");
         });
 
         OnModelCreatingPartial(modelBuilder);

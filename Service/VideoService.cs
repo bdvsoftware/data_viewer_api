@@ -31,23 +31,26 @@ public class VideoService : IVideoService
     
     private readonly IDriverRepository _driverRepository;
     
-    private readonly IFrameService _frameService;
-    
     private readonly IBatteryFrameDriverRepository _batteryFrameDriverRepository;
+    
+    private readonly ITokenConsumptionRepository _tokenConsumptionRepository;
+    
+    private readonly IFrameRepository _frameRepository;
     
     private readonly IOnboardFrameRepository _onboardFrameRepository;
 
     private readonly VideoToProcessKafkaProducer _videoToProcessKafkaProducer;
 
-    public VideoService(IVideoRepository videoRepository, ISessionRepository sessionRepository, ISessionTypeRepository sessionTypeRepository, IGrandPrixRepository grandPrixRepository, IDriverRepository driverRepository, IFrameService frameService, IBatteryFrameDriverRepository batteryFrameDriverRepository, IOnboardFrameRepository onboardFrameRepository, VideoToProcessKafkaProducer videoToProcessKafkaProducer)
+    public VideoService(IVideoRepository videoRepository, ISessionRepository sessionRepository, ISessionTypeRepository sessionTypeRepository, IGrandPrixRepository grandPrixRepository, IDriverRepository driverRepository, IBatteryFrameDriverRepository batteryFrameDriverRepository, ITokenConsumptionRepository tokenConsumptionRepository, IFrameRepository frameRepository, IOnboardFrameRepository onboardFrameRepository, VideoToProcessKafkaProducer videoToProcessKafkaProducer)
     {
         _videoRepository = videoRepository;
         _sessionRepository = sessionRepository;
         _sessionTypeRepository = sessionTypeRepository;
         _grandPrixRepository = grandPrixRepository;
         _driverRepository = driverRepository;
-        _frameService = frameService;
         _batteryFrameDriverRepository = batteryFrameDriverRepository;
+        _tokenConsumptionRepository = tokenConsumptionRepository;
+        _frameRepository = frameRepository;
         _onboardFrameRepository = onboardFrameRepository;
         _videoToProcessKafkaProducer = videoToProcessKafkaProducer;
     }
@@ -96,7 +99,9 @@ public class VideoService : IVideoService
 
         if (Constants.VideoStatus.Processed.Equals(video.Status) || Constants.VideoStatus.Processing.Equals(video.Status))
         {
+            
             await DeleteExistingProcessedFrames(video.VideoId);
+            //await DeleteTokenConsumptions(video.VideoId);
         }
 
         var videoToProcess = new VideoToProcessDto(video.VideoId, video.Url, threshold);
@@ -144,6 +149,12 @@ public class VideoService : IVideoService
     {
         await _batteryFrameDriverRepository.DeleteAllBatteryFrameDriversByVideoId(videoId);
         await _onboardFrameRepository.DeleteAllOnboardFramesByVideoId(videoId);
+    }
+
+    private async Task DeleteTokenConsumptions(int videoId)
+    {
+        var frameIds = await _frameRepository.GetFrameIdsByVideoId(videoId);
+        await _tokenConsumptionRepository.DeleteTokenConsumptionByFrames(frameIds);
     }
     
     private IEnumerable<DriverBatteryRangeDto> GroupBatteryDataByTimestampRange(IEnumerable<DriverBatteryDto> batteryData)

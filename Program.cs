@@ -33,6 +33,11 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 // Register the repositories and services
+builder.Services.AddScoped<ITokenConsumptionRepository, TokenConsumptionRepository>();
+
+builder.Services.AddScoped<IFrameRepository, FrameRepository>();
+builder.Services.AddScoped<IFrameService, FrameService>();
+
 builder.Services.AddScoped<IVideoRepository, VideoRepository>();
 builder.Services.AddScoped<IVideoService, VideoService>();
 
@@ -44,9 +49,6 @@ builder.Services.AddScoped<ISessionService, SessionService>();
 
 builder.Services.AddScoped<IGrandPrixRepository, GrandPrixRepository>();
 builder.Services.AddScoped<IGrandPrixService, GrandPrixService>();
-
-builder.Services.AddScoped<IFrameRepository, FrameRepository>();
-builder.Services.AddScoped<IFrameService, FrameService>();
 
 builder.Services.AddScoped<IBatteryFrameService, BatteryFrameService>();
 builder.Services.AddScoped<IBatteryFrameRepository, BatteryFrameRepository>();
