@@ -19,9 +19,12 @@ public class TokenConsumptionRepository : ITokenConsumptionRepository
 
     public async Task DeleteTokenConsumptionByFrames(IEnumerable<int> frameIds)
     {
+        var frameIdList = frameIds.ToArray();
+
         var tokenConsumptionsToDelete = await _db.TokenConsumptions
-            .Where(tc => frameIds.Contains(tc.FrameId))
+            .Where(tc => frameIdList.Contains(tc.FrameId))
             .ToListAsync();
+
         _db.TokenConsumptions.RemoveRange(tokenConsumptionsToDelete);
         await _db.SaveChangesAsync();
     }

@@ -327,14 +327,26 @@ public partial class ApplicationDbContext : DbContext
         
         modelBuilder.Entity<TokenConsumption>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("id");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id");
 
             entity.ToTable("token_consumption");
 
             entity.Property(e => e.FrameId).HasColumnName("frame_id");
+            entity.Property(e => e.RequestTypeId).HasColumnName("request_type_id");
             entity.Property(e => e.ResponseStatus).HasColumnName("response_status");
             entity.Property(e => e.PromptTokens).HasColumnName("prompt_tokens");
             entity.Property(e => e.CompletionTokens).HasColumnName("completion_tokens");
+            
+            entity.HasOne(e => e.Frame)
+                .WithOne()
+                .HasForeignKey<TokenConsumption>(e => e.FrameId)
+                .HasConstraintName("fk_token_consumption_frame");
+            
+            entity.HasOne(e => e.RequestType)
+                .WithMany()
+                .HasForeignKey(e => e.RequestTypeId)
+                .HasConstraintName("fk_token_consumption_request_type");
         });
 
         OnModelCreatingPartial(modelBuilder);

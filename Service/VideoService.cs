@@ -101,7 +101,7 @@ public class VideoService : IVideoService
         {
             
             await DeleteExistingProcessedFrames(video.VideoId);
-            //await DeleteTokenConsumptions(video.VideoId);
+            await DeleteTokenConsumptions(video.VideoId);
         }
 
         var videoToProcess = new VideoToProcessDto(video.VideoId, video.Url, threshold);

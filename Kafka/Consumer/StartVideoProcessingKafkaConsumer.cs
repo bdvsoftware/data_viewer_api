@@ -26,7 +26,7 @@ public class StartVideoProcessingKafkaConsumer : BackgroundService
         {
             BootstrapServers = _bootstrapServers,
             GroupId = _groupId,
-            AutoOffsetReset = AutoOffsetReset.Earliest,
+            AutoOffsetReset = AutoOffsetReset.Latest,
             MaxPollIntervalMs = 1200000
         };
 
