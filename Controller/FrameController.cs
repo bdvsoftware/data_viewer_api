@@ -23,7 +23,8 @@ public class FrameController : ControllerBase
         {
             await _frameService.UpdateFrameData(
                 request.VideoId,
-                request.Timestamp,
+                request.InitTime,
+                request.EndTime,
                 request.Lap,
                 request.DriverAbbr);
             return Ok();

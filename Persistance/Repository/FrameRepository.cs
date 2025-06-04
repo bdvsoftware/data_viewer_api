@@ -11,7 +11,7 @@ public interface IFrameRepository
     Task UpdateFrameLap(int frameId, int lap);
     Task UpdateFrame(Frame frame);
     Task<IEnumerable<int>> GetFrameIdsByVideoId(int videoId);
-    Task<Frame> GetFrameByVideoIdAndTimestamp(int videoId, int timestamp);
+    Task<List<Frame>> GetFrameByVideoIdAndTimestamps(int videoId, int initTime, int endTime);
 }
 
 public class FrameRepository : IFrameRepository
@@ -53,13 +53,15 @@ public class FrameRepository : IFrameRepository
         return await _db.Frames.Where(f => f.VideoId == videoId).Select(f => f.FrameId).ToListAsync();
     }
 
-    public async Task<Frame> GetFrameByVideoIdAndTimestamp(int videoId, int timestamp)
+    public async Task<List<Frame>> GetFrameByVideoIdAndTimestamps(int videoId, int initTime, int endTime)
     {
-        var frame = await _db.Frames.FirstOrDefaultAsync(f => f.VideoId == videoId && f.Timestamp == timestamp);
-        if (frame == null)
+        var frames = await _db.Frames
+            .Where(f => f.VideoId == videoId && f.Timestamp >= initTime && f.Timestamp <= endTime)
+            .ToListAsync();
+        if (frames == null || frames.Count == 0)
         {
-            throw new FrameNotFoundException($"Frame not found with videoId: {videoId} and timestamp: {timestamp}");
+            throw new FrameNotFoundException($"Frame not found with videoId: {videoId} and timestamp between {initTime} and {endTime}");
         }
-        return frame;
+        return frames;
     }
 }

@@ -214,6 +214,7 @@ public class VideoService : IVideoService
         int end = start;
 
         var first = sortedData[0];
+        var lap = sortedData[0].Lap;
 
         for (int i = 1; i < sortedData.Count; i++)
         {
@@ -225,18 +226,18 @@ public class VideoService : IVideoService
             }
             else
             {
-                result.Add(CreateDriverOnboardRangeDto(first, start, end));
+                result.Add(CreateDriverOnboardRangeDto(first, start, end, lap));
                 first = current;
                 start = end = current.Timestamp;
             }
         }
 
-        result.Add(CreateDriverOnboardRangeDto(first, start, end));
+        result.Add(CreateDriverOnboardRangeDto(first, start, end, lap));
 
         return result;
     }
     
-    private DriverOnboardRangeDto CreateDriverOnboardRangeDto(DriverOnboardDto dto, int start, int end)
+    private DriverOnboardRangeDto CreateDriverOnboardRangeDto(DriverOnboardDto dto, int start, int end, int? lap)
     {
         return new DriverOnboardRangeDto
         (
@@ -244,7 +245,8 @@ public class VideoService : IVideoService
             dto.DriverAbbreviation,
             dto.TeamName,
             dto.OnboardFrameId,
-            $"{FormatSecondsToTime(start)} - {FormatSecondsToTime(end)}");
+            $"{FormatSecondsToTime(start)} - {FormatSecondsToTime(end)}",
+            lap);
     }
     
     private string FormatSecondsToTime(int totalSeconds)

@@ -79,7 +79,8 @@ public class DriverRepository : IDriverRepository
                 driver.Abbreviation,
                 team.Name,
                 onboard_frame.OnboardFrameId,
-                frame.Timestamp
+                frame.Timestamp,
+                frame.Lap
             )
         ).ToListAsync();
 

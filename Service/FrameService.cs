@@ -15,8 +15,7 @@ public interface IFrameService
 {
     Task ProduceFrames(int videoId, string videoUrl, int threshold);
     Task ReceiveProcessedFrame(ProcessedFrameDto processedFrame);
-    Task UpdateFrameLapByVideoIdAndTimestamp(int videoId, int timestamp, int lap);
-    Task UpdateFrameData(int videoId, int timestamp, int lap, string driverAbbr);
+    Task UpdateFrameData(int? videoId, int initTime, int endTime, int? lap, string driverAbbr);
 }
 
 public class FrameService : IFrameService
@@ -149,16 +148,23 @@ public class FrameService : IFrameService
         }
     }
 
-    public async Task UpdateFrameLapByVideoIdAndTimestamp(int videoId, int timestamp, int lap)
+    public async Task UpdateFrameData(int? videoId, int initTime, int endTime, int? lap, string driverAbbr)
     {
-        var frame = await _frameRepository.GetFrameByVideoIdAndTimestamp(videoId, timestamp);
-        await _frameRepository.UpdateFrameLap(frame.FrameId, lap);
-    }
-
-    public async Task UpdateFrameData(int videoId, int timestamp, int lap, string driverAbbr)
-    {
-        var frame = await _frameRepository.GetFrameByVideoIdAndTimestamp(videoId, timestamp);
-        await _frameRepository.UpdateFrameLap(frame.FrameId, lap);
-        await _onboardHelmetFrameService.UpdateOnboardFrameData(frame.FrameId, driverAbbr);
+        if (videoId == null)
+        {
+            throw new ArgumentNullException(nameof(videoId));
+        }
+        var frames = await _frameRepository.GetFrameByVideoIdAndTimestamps(videoId.Value, initTime, endTime);
+        if (frames.Count > 0)
+        {
+            foreach (var frame in frames)
+            {
+                if (lap != null)
+                {
+                    await _frameRepository.UpdateFrameLap(frame.FrameId, lap.Value);
+                }
+                await _onboardHelmetFrameService.UpdateOnboardFrameData(frame.FrameId, driverAbbr);
+            }
+        }
     }
 }
