@@ -15,6 +15,8 @@ public interface IFrameService
 {
     Task ProduceFrames(int videoId, string videoUrl, int threshold);
     Task ReceiveProcessedFrame(ProcessedFrameDto processedFrame);
+    Task UpdateFrameLapByVideoIdAndTimestamp(int videoId, int timestamp, int lap);
+    Task UpdateFrameData(int videoId, int timestamp, int lap, string driverAbbr);
 }
 
 public class FrameService : IFrameService
@@ -145,5 +147,18 @@ public class FrameService : IFrameService
         {
             _logger.LogError(ex, $"Failed to update video status for video {processedFrame.VideoId}");
         }
+    }
+
+    public async Task UpdateFrameLapByVideoIdAndTimestamp(int videoId, int timestamp, int lap)
+    {
+        var frame = await _frameRepository.GetFrameByVideoIdAndTimestamp(videoId, timestamp);
+        await _frameRepository.UpdateFrameLap(frame.FrameId, lap);
+    }
+
+    public async Task UpdateFrameData(int videoId, int timestamp, int lap, string driverAbbr)
+    {
+        var frame = await _frameRepository.GetFrameByVideoIdAndTimestamp(videoId, timestamp);
+        await _frameRepository.UpdateFrameLap(frame.FrameId, lap);
+        await _onboardHelmetFrameService.UpdateOnboardFrameData(frame.FrameId, driverAbbr);
     }
 }

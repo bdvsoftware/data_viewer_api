@@ -7,6 +7,7 @@ public interface IOnboardFrameRepository
 {
     public Task<OnboardFrame> AddOnboardFrame(OnboardFrame onboardFrame);
     public Task DeleteAllOnboardFramesByVideoId(int videoId);
+    public Task UpdateOnboardFrameDriverByVideoIdTimestamp(int frameId, int driverId);
 }
 
 public class OnboardFrameRepository : IOnboardFrameRepository
@@ -33,7 +34,7 @@ public class OnboardFrameRepository : IOnboardFrameRepository
             join v in _db.Videos on f.VideoId equals v.VideoId
             where v.VideoId == videoId
             select of.OnboardFrameId
-            ).ToListAsync();
+        ).ToListAsync();
         if (idsToDelete.Any())
         {
             foreach (var id in idsToDelete)
@@ -43,5 +44,17 @@ public class OnboardFrameRepository : IOnboardFrameRepository
                     .ExecuteDeleteAsync();
             }
         }
+    }
+
+    public async Task UpdateOnboardFrameDriverByVideoIdTimestamp(int frameId, int driverId)
+    {
+        var onboardFrame = await (
+            from of in _db.OnboardFrames
+            join f in _db.Frames on of.FrameId equals f.FrameId
+            where f.FrameId == frameId
+            select of
+        ).FirstAsync();
+        onboardFrame.DriverId = driverId;
+        await _db.SaveChangesAsync();
     }
 }

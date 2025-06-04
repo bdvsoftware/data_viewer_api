@@ -1,4 +1,5 @@
-﻿using DataViewerApi.Persistance.Entity;
+﻿using DataViewerApi.Exception;
+using DataViewerApi.Persistance.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataViewerApi.Persistance.Repository;
@@ -10,11 +11,11 @@ public interface IFrameRepository
     Task UpdateFrameLap(int frameId, int lap);
     Task UpdateFrame(Frame frame);
     Task<IEnumerable<int>> GetFrameIdsByVideoId(int videoId);
+    Task<Frame> GetFrameByVideoIdAndTimestamp(int videoId, int timestamp);
 }
 
 public class FrameRepository : IFrameRepository
 {
-    
     private readonly ApplicationDbContext _db;
 
     public FrameRepository(ApplicationDbContext db)
@@ -33,14 +34,14 @@ public class FrameRepository : IFrameRepository
     {
         return await _db.Frames.FirstAsync(f => f.FrameId == id);
     }
-    
+
     public async Task UpdateFrameLap(int frameId, int lap)
     {
         var frame = await GetFrameById(frameId);
         frame.Lap = lap;
         await UpdateFrame(frame);
     }
-    
+
     public async Task UpdateFrame(Frame frame)
     {
         _db.Frames.Update(frame);
@@ -50,5 +51,15 @@ public class FrameRepository : IFrameRepository
     public async Task<IEnumerable<int>> GetFrameIdsByVideoId(int videoId)
     {
         return await _db.Frames.Where(f => f.VideoId == videoId).Select(f => f.FrameId).ToListAsync();
+    }
+
+    public async Task<Frame> GetFrameByVideoIdAndTimestamp(int videoId, int timestamp)
+    {
+        var frame = await _db.Frames.FirstOrDefaultAsync(f => f.VideoId == videoId && f.Timestamp == timestamp);
+        if (frame == null)
+        {
+            throw new FrameNotFoundException($"Frame not found with videoId: {videoId} and timestamp: {timestamp}");
+        }
+        return frame;
     }
 }
